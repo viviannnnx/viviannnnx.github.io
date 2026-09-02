@@ -30,6 +30,7 @@
             position: sticky;
             left: 0;
             top: 0;
+            flex-shrink: 0;
         }
 
         .sidebar a {
@@ -39,8 +40,8 @@
         }
 
         .content {
-            margin-left: 250px;
-            width: calc(100% - 250px);
+            flex: 1;
+            min-width: 0;
             max-width: 900px;
             padding: 50px 70px;
         }
@@ -50,7 +51,6 @@
             font-weight: bold;
             margin-bottom: 10px;
         }
-
 
         h2 {
             font-size: 26px;
@@ -69,66 +69,76 @@
             font-size: 16px;
         }
 
-        .image {
-            width: 100%;
-            max-width: 600px;
-            background: #eee;
-            border: 1px solid #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 20px 0 40px;
-            color: #777;
+        /* Figures replace the old .image divs so each picture
+           carries its own caption and has no extra background/whitespace */
+        figure {
+            margin: 0;
         }
 
-        .image img {
+        figure img {
+            display: block;
             width: 100%;
-            height: 100%;
-            object-fit: contain;
+            height: auto;
+            border: 1px solid #ccc;
+        }
+
+        figcaption {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #444;
+            text-align: center;
         }
 
         .image-row {
             display: flex;
-            gap: 20px;
+            flex-wrap: nowrap;
+            gap: 16px;
             margin: 20px 0 40px;
         }
 
-        .image-row .image {
-            width: 280px;
-            margin: 0;
+        .image-row figure {
+            flex: 1 1 0;
+            min-width: 0;
         }
 
         .gif {
             width: 100%;
             max-width: 600px;
-            background: #eee;
-            border: 1px solid #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #777;
-            margin-top: 20px;
+            margin: 20px 0 0;
         }
+
         .gif img {
+            display: block;
             width: 100%;
-            height: 100%;
-            object-fit: contain;
+            height: auto;
+            border: 1px solid #ccc;
         }
 
         @media (max-width: 700px) {
+            .page {
+                flex-direction: column;
+            }
+
             .sidebar {
-                width: 180px;
-                padding: 30px 20px;
+                width: 100%;
+                min-height: auto;
+                position: static;
+                padding: 20px;
             }
 
             .content {
-                margin-left: 180px;
-                width: calc(100% - 180px);
-                padding: 30px;
+                max-width: 100%;
+                padding: 30px 20px;
             }
 
             .image-row {
                 flex-direction: column;
+                flex-wrap: nowrap;
+            }
+
+            .image-row figure {
+                flex: 1 1 auto;
+                min-width: 0;
             }
         }
     </style>
@@ -142,27 +152,46 @@
         <a href="../index.html">Back to Portfolio</a>
     </aside>
 
-
     <main class="content">
 
         <div class="project-title">
             Project 0: Becoming Friends with Your Camera
         </div>
 
-
         <section>
 
             <h2>Part 1: Selfie: The Wrong Way vs. The Right Way</h2>
 
-            <div class="image">
-                <span>img</span>
-                <!-- Replace with:
-                <img src="images/image1.png" alt="Part 1">
-                -->
+            <div class="image-row">
+
+                <figure>
+                    <img src="images/8.jpg" alt="x8 Zoomed In">
+                    <figcaption>x8 Zoomed In</figcaption>
+                </figure>
+
+                <figure>
+                    <img src="images/4.jpg" alt="x4 Zoomed In">
+                    <figcaption>x4 Zoomed In</figcaption>
+                </figure>
+
+                <figure>
+                    <img src="images/1.jpg" alt="x1 Zoomed In">
+                    <figcaption>x1 Zoomed In</figcaption>
+                </figure>
+
+                <figure>
+                    <img src="images/0.5.jpg" alt="x0.5 Zoomed In">
+                    <figcaption>x0.5 Zoomed In</figcaption>
+                </figure>
+
+                <figure>
+                    <img src="images/Selfie.jpg" alt="Selfie - Right Way">
+                    <figcaption>Selfie - Right Way</figcaption>
+                </figure>
+
             </div>
 
         </section>
-
 
         <section>
 
@@ -170,36 +199,29 @@
 
             <div class="image-row">
 
-            <div class="image">
-                <img src="./images/TreeZoom.jpg" alt="Part 2 Tree Zoomed In x5.0">
-            </div>
-            <div class="text">
-                <p>Tree Zoomed In x5.0</p>
-            </div>
-            
+                <figure>
+                    <img src="./images/TreeZoom.jpg" alt="Tree Zoomed In x5.0">
+                    <figcaption>Tree Zoomed In x5.0</figcaption>
+                </figure>
 
-            <div class="image">
-                <img src="./images/TreeClose.jpg" alt="Part 2 Tree Close-up">
-            </div>
-            <div class="text">
-                <p>Tree Close-up</p>
-            </div>
+                <figure>
+                    <img src="./images/TreeClose.jpg" alt="Tree Close-up">
+                    <figcaption>Tree Close-up</figcaption>
+                </figure>
 
-        </div>
+            </div>
 
         </section>
-
 
         <section>
 
             <h2>Part 3: The Dolly Zoom</h2>
 
             <div class="gif">
-                <img src="./images/DollyZoom.gif" alt="Part 3 Dolly Zoom">
+                <img src="./images/DollyZoom.gif" alt="Dolly Zoom">
             </div>
-            <div class="text">
-                <p>Dolly Zoom</p>
-            </div>
+            <p style="text-align:center; margin-top:8px;">Dolly Zoom</p>
+
         </section>
 
     </main>
