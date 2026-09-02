@@ -96,6 +96,20 @@
             background: #1c1f24;
         }
 
+        .sidebar nav span.disabled {
+            display: block;
+            padding: 12px 30px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            border-left: 3px solid transparent;
+            color: var(--text-dim);
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
         .content {
             flex: 1;
             min-width: 0;
@@ -223,11 +237,11 @@
         <p class="sidebar-label">Projects</p>
         <nav>
             <a class="active" href="../0/index.html">00 &middot; Camera</a>
-            <a href="../1/index.html">01 &middot; Prokudin-Gorskii</a>
-            <a href="../2/index.html">02 &middot;  Filters &amp; Frequencies</a>
-            <a href="../3/index.html">03 &middot; Diffusion Models</a>
-            <a href="../4/index.html">04 &middot; (Auto)stitching &amp;  Mosaics</a>
-            <a href="../5/index.html">05 &middot; Final Project</a>
+            <span class="disabled" aria-disabled="true">01 &middot; Prokudin-Gorskii</span>
+            <span class="disabled" aria-disabled="true">02 &middot;  Filters &amp; Frequencies</span>
+            <span class="disabled" aria-disabled="true">03 &middot; Diffusion Models</span>
+            <span class="disabled" aria-disabled="true">04 &middot; (Auto)stitching &amp;  Mosaics</span>
+            <span class="disabled" aria-disabled="true">05 &middot; Final Project</span>
         </nav>
     </aside>
 
@@ -264,7 +278,7 @@
                 </figure>
 
                 <figure>
-                    <img src="images/selfie.jpg" alt="Selfie - Right Way">
+                    <img src="images/Selfie.jpg" alt="Selfie - Right Way">
                     <figcaption>Selfie - Right Way</figcaption>
                 </figure>
 
