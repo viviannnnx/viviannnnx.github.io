@@ -196,6 +196,14 @@
             height: auto;
             border: 1px solid var(--line);
         }
+       .explanation {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text-dim);
+            margin: -20px 0 40px;
+       }
 
         @media (max-width: 700px) {
             .page {
@@ -279,16 +287,31 @@
 
                 <figure>
                     <img src="images/Selfie.jpg" alt="Selfie - Right Way">
-                    <figcaption>Selfie - Right Way</figcaption>
+                    <figcaption>Selfie</figcaption>
                 </figure>
-
             </div>
+            <p class="explanation">At close range, the nose sits noticeably nearer the lens than the ears, so that small difference in distance is exaggerated into a large difference in size, enlarging the nose and cropping out the ears. Stepping back and zooming in reduces this relative distance difference, producing more natural proportions</p>
+
 
         </section>
 
         <section>
 
             <h2>Part 2: Architectural Perspective Compression</h2>
+            
+            <div class="image-row">
+
+                <figure>
+                    <img src="./images/BuildingFar.jpg" alt="Tree Zoomed In x5.0">
+                    <figcaption>x5 Zoomed in</figcaption>
+                </figure>
+
+                <figure>
+                    <img src="./images/BuildingClose.jpg" alt="Tree Close-up">
+                    <figcaption>Close-Up</figcaption>
+                </figure>
+
+            </div>
 
             <div class="image-row">
 
@@ -303,7 +326,7 @@
                 </figure>
 
             </div>
-
+            <p class="explanation">Standing farther back and zooming in compresses depth, pulling the background closer and flattening the scene. On the other hand, standing close gives the photo more depth as there are more significant distances between every component.</p>
         </section>
 
         <section>
@@ -312,8 +335,9 @@
 
             <div class="gif">
                 <img src="./images/DollyZoom.gif" alt="Dolly Zoom">
+                <figcaption>Dolly Zoom</figcaption>
+
             </div>
-            <p style="text-align:center; margin-top:8px;">Dolly Zoom</p>
 
         </section>
 
