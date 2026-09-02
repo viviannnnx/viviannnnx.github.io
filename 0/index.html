@@ -3,18 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Page</title>
+    <title>Project 0 — Becoming Friends with Your Camera</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Chakra+Petch:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
-        * {
-            box-sizing: border-box;
+        :root {
+            --bg: #0f1114;
+            --bg-panel: #16191d;
+            --accent: #ff4655;
+            --accent-dim: #ff465533;
+            --text: #ece8e1;
+            --text-dim: #8b8f94;
+            --line: #2a2d31;
         }
+
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: white;
-            color: #222;
+            font-family: 'Chakra Petch', sans-serif;
+            background: var(--bg);
+            color: var(--text);
         }
 
         .page {
@@ -23,43 +35,99 @@
         }
 
         .sidebar {
-            width: 250px;
+            width: 220px;
             min-height: 100vh;
-            border-right: 1px solid #ddd;
-            padding: 40px 30px;
+            flex-shrink: 0;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--line);
+            padding: 40px 0;
             position: sticky;
             left: 0;
             top: 0;
-            flex-shrink: 0;
         }
 
-        .sidebar a {
+        .sidebar .back {
+            display: block;
+            margin: 0 30px 30px;
             text-decoration: none;
-            color: #333;
-            font-size: 18px;
+            color: var(--text-dim);
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.2s ease;
+        }
+
+        .sidebar .back:hover {
+            color: var(--accent);
+        }
+
+        .sidebar-label {
+            margin: 0 30px 14px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 12px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        .sidebar nav a {
+            position: relative;
+            display: block;
+            padding: 12px 30px;
+            text-decoration: none;
+            color: var(--text-dim);
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            border-left: 3px solid transparent;
+            transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .sidebar nav a:hover {
+            color: var(--text);
+            background: #1c1f24;
+        }
+
+        .sidebar nav a.active {
+            color: var(--accent);
+            border-left-color: var(--accent);
+            background: #1c1f24;
         }
 
         .content {
             flex: 1;
             min-width: 0;
             max-width: 900px;
-            padding: 50px 70px;
+            padding: 60px 70px;
         }
 
         .project-title {
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 10px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 34px;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--line);
         }
 
         h2 {
-            font-size: 26px;
-            margin-top: 45px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 22px;
+            margin-top: 55px;
             margin-bottom: 20px;
+            color: var(--accent);
         }
 
         h3 {
-            font-size: 22px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 20px;
             margin-top: 35px;
             margin-bottom: 15px;
         }
@@ -67,10 +135,9 @@
         p {
             line-height: 1.6;
             font-size: 16px;
+            color: var(--text-dim);
         }
 
-        /* Figures replace the old .image divs so each picture
-           carries its own caption and has no extra background/whitespace */
         figure {
             margin: 0;
         }
@@ -79,14 +146,16 @@
             display: block;
             width: 100%;
             height: auto;
-            border: 1px solid #ccc;
+            border: 1px solid var(--line);
         }
 
         figcaption {
             margin-top: 8px;
-            font-size: 14px;
-            color: #444;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            color: var(--text-dim);
             text-align: center;
+            text-transform: uppercase;
         }
 
         .image-row {
@@ -111,7 +180,7 @@
             display: block;
             width: 100%;
             height: auto;
-            border: 1px solid #ccc;
+            border: 1px solid var(--line);
         }
 
         @media (max-width: 700px) {
@@ -123,7 +192,7 @@
                 width: 100%;
                 min-height: auto;
                 position: static;
-                padding: 20px;
+                padding: 20px 0;
             }
 
             .content {
@@ -149,7 +218,17 @@
 <div class="page">
 
     <aside class="sidebar">
-        <a href="../index.html">Back to Portfolio</a>
+        <a class="back" href="../index.html">&larr; Back to Portfolio</a>
+
+        <p class="sidebar-label">Projects</p>
+        <nav>
+            <a class="active" href="../0/index.html">00 &middot; Camera</a>
+            <a href="../1/index.html">01 &middot; Prokudin-Gorskii</a>
+            <a href="../2/index.html">02 &middot;  Filters &amp; Frequencies</a>
+            <a href="../3/index.html">03 &middot; Diffusion Models</a>
+            <a href="../4/index.html">04 &middot; (Auto)stitching &amp;  Mosaics</a>
+            <a href="../5/index.html">05 &middot; Final Project</a>
+        </nav>
     </aside>
 
     <main class="content">
@@ -160,7 +239,7 @@
 
         <section>
 
-            <h2>Part 1: Selfie: The Wrong Way vs. The Right Way</h2>
+            <h2>Part 1: Selfie — The Wrong Way vs. The Right Way</h2>
 
             <div class="image-row">
 
@@ -185,7 +264,7 @@
                 </figure>
 
                 <figure>
-                    <img src="images/Selfie.jpg" alt="Selfie - Right Way">
+                    <img src="images/selfie.jpg" alt="Selfie - Right Way">
                     <figcaption>Selfie - Right Way</figcaption>
                 </figure>
 
@@ -201,12 +280,12 @@
 
                 <figure>
                     <img src="./images/TreeZoom.jpg" alt="Tree Zoomed In x5.0">
-                    <figcaption>Tree Zoomed In x5.0</figcaption>
+                    <figcaption>x5 Zoomed in</figcaption>
                 </figure>
 
                 <figure>
                     <img src="./images/TreeClose.jpg" alt="Tree Close-up">
-                    <figcaption>Tree Close-up</figcaption>
+                    <figcaption>Close-Up</figcaption>
                 </figure>
 
             </div>

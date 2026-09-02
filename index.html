@@ -1,33 +1,236 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My CS180 Portfolio</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My CS180 Portfolio</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Chakra+Petch:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --bg: #0f1114;
+        --bg-panel: #16191d;
+        --accent: #ff4655;      
+        --text: #ece8e1;
+        --text-dim: #8b8f94;
+        --line: #2a2d31;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Chakra Petch', sans-serif;
+        min-height: 100vh;
+    }
+
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image:
+            linear-gradient(var(--line) 1px, transparent 1px),
+            linear-gradient(90deg, var(--line) 1px, transparent 1px);
+        background-size: 60px 60px;
+        opacity: 0.15;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .wrap {
+        position: relative;
+        z-index: 1;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 80px 40px 60px;
+    }
+
+    .eyebrow {
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 600;
+        letter-spacing: 6px;
+        text-transform: uppercase;
+        color: var(--accent);
+        font-size: 14px;
+        margin: 0 0 10px;
+    }
+
+    h1 {
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 48px;
+        margin: 0 0 8px;
+        line-height: 1.05;
+    }
+
+    .subtitle {
+        color: var(--text-dim);
+        font-size: 16px;
+        margin: 0 0 50px;
+        max-width: 520px;
+    }
+
+    /* --- project list, styled like an agent-select menu --- */
+    .project-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .project {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        background: var(--bg-panel);
+        border: 1px solid var(--line);
+        border-left: 3px solid transparent;
+        padding: 22px 28px;
+        text-decoration: none;
+        color: var(--text);
+        clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+        transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+    }
+
+    .project.disabled {
+        cursor: not-allowed;
+        opacity: 0.45;
+    }
+ 
+    .project.disabled:hover {
+        border-left-color: transparent;
+        background: var(--bg-panel);
+        transform: none;
+    }
+ 
+    .project.disabled .project-index:hover,
+    .project.disabled:hover .project-index {
+        color: var(--text-dim);
+    }
+
+    .project:hover,
+    .project:focus-visible {
+        border-left-color: var(--accent);
+        background: #1c1f24;
+        transform: translateX(4px);
+    }
+
+    .project-index {
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 700;
+        font-size: 34px;
+        color: var(--text-dim);
+        min-width: 56px;
+        transition: color 0.2s ease;
+    }
+
+    .project:hover .project-index {
+        color: var(--accent);
+    }
+
+    .project-title {
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 600;
+        font-size: 20px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .project-status {
+        margin-left: auto;
+        font-size: 12px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border: 1px solid var(--line);
+        color: var(--text-dim);
+        white-space: nowrap;
+    }
+
+    .project-status.locked {
+        color: var(--text-dim);
+        cursor: not-allowed;
+    }
+
+    .project-status.live {
+        color: var(--accent);
+        border-color: var(--accent-dim);
+    }
+
+    footer {
+        margin-top: 60px;
+        color: var(--text-dim);
+        font-size: 13px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    @media (max-width: 600px) {
+        .wrap { padding: 50px 20px; }
+        h1 { font-size: 34px; }
+        .project { padding: 18px 18px; gap: 16px; }
+        .project-title { font-size: 16px; }
+        .project-status { display: none; } 
+    }
+</style>
 </head>
 <body>
-    <h1>Welcome to My CS180 Portfolio!</h1>
-    <div>
-        <a href="./0/index.html">Project 0</a>
+
+<div class="wrap">
+
+    <p class="eyebrow">CS 180 &mdash; Intro to Computer Vision and Computational Photography</p>
+    <h1>Xintian's Portfolio</h1>
+    <p class="subtitle">Please let me into the course</p>
+
+    <div class="project-list">
+
+        <a class="project" href="./0/index.html">
+            <span class="project-index">00</span>
+            <span class="project-title">Becoming Friends with Your Camera</span>
+            <span class="project-status live">Complete</span>
+        </a>
+        <div class="project disabled" aria-disabled="true">
+            <span class="project-index">01</span>
+            <span class="project-title">Images of the Russian Empire — Colorizing the Prokudin-Gorskii Photo Collection</span>
+            <span class="project-status locked">Stay tuned</span>
+        </div>
+
+        <div class="project disabled" aria-disabled="true">
+            <span class="project-index">02</span>
+            <span class="project-title">Fun with Filters and Frequencies</span>
+            <span class="project-status locked">Stay tuned</span>
+        </div>
+
+        <div class="project disabled" aria-disabled="true">
+            <span class="project-index">03</span>
+            <span class="project-title">Fun with Diffusion Models</span>
+            <span class="project-status locked">Stay tuned</span>
+        </div>
+
+        <div class="project disabled" aria-disabled="true">
+            <span class="project-index">04</span>
+            <span class="project-title">(Auto)stitching and Photo Mosaics</span>
+            <span class="project-status locked">Stay tuned</span>
+        </div>
+
+        <div class="project disabled" aria-disabled="true">
+            <span class="project-index">05</span>
+            <span class="project-title">Final Project</span>
+            <span class="project-status locked">Stay tuned</span>
+        </div>
+
     </div>
-    <div>
-        <a href="./1/index.html">Project 1 (Stay tuned~)</a>
-    </div>
-    <div>
-        <a href="./2/index.html">Project 2 (Stay tuned~)</a>
-    </div>
-    <div>
-        <a href="./3/index.html">Project 3 (Stay tuned~)</a>
-    </div>
-    <div>
-        <a href="./4/index.html">Project 4 (Stay tuned~)</a>
-    </div>
-    <div>
-        <a href="./5/index.html">Project 5 (Stay tuned~)</a>
-    </div>
+
+    <footer>Fall 2026</footer>
+
+</div>
+
 </body>
 </html>
