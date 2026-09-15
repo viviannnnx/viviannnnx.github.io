@@ -6,7 +6,7 @@ import cv2 as cv
 import matplotlib.pyplot as plt
 
 # name of the input file
-imname = './1/CS180_fa2026_proj1_data/tobolsk.jpg'
+imname = './1/CS180_fa2026_proj1_data/v_ital.tif'
 
 # read in the image as grayscale (the glass plate scan is stacked grayscale)
 im = cv.imread(imname, cv.IMREAD_GRAYSCALE)
@@ -98,7 +98,7 @@ out_uint8 = np.clip(im_out * 255.0, 0, 255).astype(np.uint8)
 out_bgr = cv.cvtColor(out_uint8, cv.COLOR_RGB2BGR)
 
 # save the image
-fname = './1/images/multi/tobolsk_ncc.jpg'
+fname = './1/images/own/v_ital_ncc.tif'
 cv.imwrite(fname, out_bgr)
 print(f"G offset: ({gb_dx}, {gb_dy})")
 print(f"R offset: ({rb_dx}, {rb_dy})")
