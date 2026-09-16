@@ -1034,7 +1034,7 @@ footer {
 
                 Colorizing the Prokudin-Gorskii Photo Collection
                 through image alignment, multi-scale search,
-                and feature-based matching.
+                and gradient-based matching.
 
             </p>
 
@@ -1097,66 +1097,6 @@ footer {
                 of the green and red channels that produces the
                 best match.
             </p>
-
-
-            <div class="method-grid">
-
-                <div class="method-card">
-
-                    <h3>
-                        01 / Align
-                    </h3>
-
-                    <p>
-                        Find the horizontal and vertical
-                        displacement between color channels.
-                    </p>
-
-                </div>
-
-
-                <div class="method-card">
-
-                    <h3>
-                        02 / Stack
-                    </h3>
-
-                    <p>
-                        Combine the aligned B, G and R channels
-                        into a single RGB image.
-                    </p>
-
-                </div>
-
-
-                <div class="method-card">
-
-                    <h3>
-                        03 / Refine
-                    </h3>
-
-                    <p>
-                        Use a multi-scale pyramid to efficiently
-                        handle larger image displacements.
-                    </p>
-
-                </div>
-
-
-                <div class="method-card">
-
-                    <h3>
-                        04 / Improve
-                    </h3>
-
-                    <p>
-                        Investigate difficult cases and improve
-                        the matching strategy.
-                    </p>
-
-                </div>
-
-            </div>
 
         </div>
 
@@ -1959,6 +1899,224 @@ def pyramid_align(base, moving, metric, window=5, min_size=64):
 
 </section>
 
+
+
+<!-- =========================
+     IMPROVEMENT
+========================= -->
+
+<section id="improvement">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div class="section-number">
+                04
+            </div>
+
+            <div>
+
+                <p class="section-label">
+                    Refinement
+                </p>
+
+                <h2>
+                    Improving Alignment
+                </h2>
+
+                <p>
+                    Moving beyond raw pixel matching to
+                    address difficult alignment cases.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="content">
+
+            <p class="lead">
+                The baseline approach works well when the
+                corresponding channels have similar intensity
+                patterns, but some photographs violate this
+                assumption, specifically Emir.
+            </p>
+
+
+            <div class="callout">
+
+                <strong>
+                    Difficult Case — Emir
+                </strong>
+
+                <p>
+                    Emir is difficult because the three exposures have 
+                    substantially different brightness/intensity 
+                    characteristics. His bright blue robe has different 
+                    brightness values in the red and blue exposure, 
+                    causing the great disparity in alignment we see 
+                    above.
+                </p>
+
+            </div>
+
+
+            <h3 class="section-label">
+                Improved Feature / Distance Metric
+            </h3>
+
+
+            <p>
+                The original alignment algorithm uses NCC to compare 
+                the raw pixel intensities of the different color channels. 
+                However, this can be unreliable when the channels have 
+                different brightness or exposure. To improve this, I used a
+                gradient-based approach that first computes the gradient 
+                magnitude of each channel using Sobel filters. This focuses 
+                the alignment on structural features such as edges and object 
+                boundaries, which are more consistent across the channels. 
+                NCC is then applied to these gradient images to find the best 
+                displacement. I also retained the image pyramid approach so 
+                that large displacements can first be found at lower 
+                resolutions and then refined at higher resolutions.
+            </p>
+
+
+            <div class="code-wrapper">
+
+                <span class="code-label">
+                    Improved Alignment
+                </span>
+
+<pre><code>
+def gradient_magnitude(im):
+
+    gx = cv.Sobel(im, cv.CV_32F, 1, 0, ksize=3)
+    gy = cv.Sobel(im, cv.CV_32F, 0, 1, ksize=3)
+
+    magnitude = np.sqrt(gx ** 2 + gy ** 2)
+
+    return magnitude
+
+def gradient_align(base, moving, window=15):
+
+    # Compute gradients once
+    base_gradient = gradient_magnitude(base)
+    moving_gradient = gradient_magnitude(moving)
+
+    best_score = -np.inf
+    best_offset = (0, 0)
+
+    for dy in range(-window, window + 1):
+        for dx in range(-window, window + 1):
+
+            shifted = shift_im(
+                moving_gradient,
+                dx,
+                dy
+            )
+
+            score = ncc_score(
+                crop_border(base_gradient),
+                crop_border(shifted)
+            )
+
+            if score > best_score:
+                best_score = score
+                best_offset = (dx, dy)
+
+    return best_offset
+</code></pre>
+
+            </div>
+
+
+            <!-- BEFORE / AFTER -->
+
+            <div class="image-pair">
+
+                <div class="image-item">
+
+                    <img
+                        src="images/multi/emir_ncc.jpg"
+                        alt="Before improvement"
+                    >
+
+                    <div class="image-caption">
+                        Before — Multi-Scale Method
+                    </div>
+
+                </div>
+
+
+                <div class="image-item">
+
+                    <img
+                        src="images/own/emir.jpg"
+                        alt="After improvement"
+                    >
+
+                    <div class="image-caption">
+                        After — Gradient Multi-Scale Method
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     BELLS & WHISTLES
+========================= -->
+
+<section id="bells">
+
+    <div class="container">
+
+        <div class="section-heading">
+
+            <div class="section-number">
+                06
+            </div>
+
+            <div>
+
+                <p class="section-label">
+                    Bonus Operations
+                </p>
+
+                <h2>
+                    Bells & Whistles
+                </h2>
+
+                <p>
+                    Additional experiments and improvements
+                    beyond the core alignment pipeline.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="content">
+
+            <p class="lead">
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
 
 
 

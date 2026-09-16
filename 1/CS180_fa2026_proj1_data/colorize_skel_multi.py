@@ -22,8 +22,6 @@ b = im[:height]
 g = im[height: 2*height]
 r = im[2*height: 3*height]
 
-def l2_score(im1, im2):
-    return np.sqrt(np.sum((im1 - im2) ** 2))
 
 def ncc_score(im1, im2):
     v1 = (im1 - im1.mean()).flatten()
@@ -44,8 +42,7 @@ def align(base, moving, window=15, metric='ncc'):
     for dy in range(-window, window + 1):
         for dx in range(-window, window + 1):
             shifted = shift_im(moving, dx, dy)
-            score = (ncc_score(crop_border(base), crop_border(shifted)) if metric == 'ncc'
-                     else l2_score(crop_border(base), crop_border(shifted)))
+            score = (ncc_score(crop_border(base), crop_border(shifted)))
             is_better = (score > best_score) if metric == 'ncc' else (score < best_score)
             if best_score == 0 or is_better:
                 best_score = score
