@@ -466,6 +466,58 @@ pre {
     line-height: 1.7;
 }
 
+/* Clickable images */
+.zoomable {
+    cursor: zoom-in;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.zoomable:hover {
+    opacity: 0.9;
+}
+
+/* Lightbox */
+.lightbox {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 40px;
+    box-sizing: border-box;
+    cursor: zoom-out;
+}
+
+.lightbox.active {
+    display: flex;
+}
+
+.lightbox img {
+    max-width: 95vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+
+    font-size: 40px;
+    color: white;
+    cursor: pointer;
+    line-height: 1;
+
+    z-index: 10000;
+}
 
 .image-placeholder {
     min-height: 320px;
@@ -1064,6 +1116,7 @@ def align(base, moving, window=15):
                             <div class="result-image">
 
                                 <img
+                                    class = "zoomable"
                                     src="images/single/cathedral_ncc.jpg"
                                     alt="Cathedral aligned result"
                                 >
@@ -1100,6 +1153,7 @@ def align(base, moving, window=15):
                             <div class="result-image">
 
                                 <img
+                                    class = "zoomable"
                                     src="images/single/monastery_ncc.jpg"
                                     alt="Monastery aligned result"
                                 >
@@ -1136,6 +1190,7 @@ def align(base, moving, window=15):
                             <div class="result-image">
 
                                 <img
+                                    class = "zoomable"
                                     src="images/single/tobolsk_ncc.jpg"
                                     alt="Tobolsk aligned result"
                                 >
@@ -1306,8 +1361,9 @@ def pyramid_align(base, moving, window=5, min_size=64):
                         <div class="result-card">
                             <div class="result-image">
                                 <img
+                                    class="zoomable"
                                     src="images/multi/cathedral_ncc.jpg"
-                                    alt="Cathedral aligned using multi-scale NCC"
+                                    alt="Cathedral"
                                 >
                             </div>
 
@@ -1326,6 +1382,7 @@ def pyramid_align(base, moving, window=5, min_size=64):
                         <div class="result-card">
                             <div class="result-image">
                                 <img
+                                    class = "zoomable"
                                     src="images/multi/church_ncc.jpg"
                                     alt="Church aligned using multi-scale NCC"
                                 >
@@ -1346,6 +1403,7 @@ def pyramid_align(base, moving, window=5, min_size=64):
                         <div class="result-card">
                             <div class="result-image">
                                 <img
+                                    class = "zoomable"                                
                                     src="images/multi/emir_ncc.jpg"
                                     alt="Emir aligned using multi-scale NCC"
                                 >
@@ -1366,6 +1424,7 @@ def pyramid_align(base, moving, window=5, min_size=64):
                         <div class="result-card">
                             <div class="result-image">
                                 <img
+                                    class = "zoomable"
                                     src="images/multi/harvesters_ncc.jpg"
                                     alt="Harvesters aligned using multi-scale NCC"
                                 >
@@ -1386,6 +1445,7 @@ def pyramid_align(base, moving, window=5, min_size=64):
                         <div class="result-card">
                             <div class="result-image">
                                 <img
+                                    class = "zoomable"
                                     src="images/multi/icon_ncc.jpg"
                                     alt="Icon aligned using multi-scale NCC"
                                 >
@@ -1406,6 +1466,7 @@ def pyramid_align(base, moving, window=5, min_size=64):
                         <div class="result-card">
                             <div class="result-image">
                                 <img
+                                    class = "zoomable"
                                     src="images/multi/ilemselga_ncc.jpg"
                                     alt="Ilemelsga aligned using multi-scale NCC"
                                 >
@@ -1426,6 +1487,7 @@ def pyramid_align(base, moving, window=5, min_size=64):
                         <div class="result-card">
                             <div class="result-image">
                                 <img
+                                    class = "zoomable"
                                     src="images/multi/melons_ncc.jpg"
                                     alt="Melons aligned using multi-scale NCC"
                                 >
@@ -1446,6 +1508,7 @@ def pyramid_align(base, moving, window=5, min_size=64):
                         <div class="result-card">
                             <div class="result-image">
                                 <img
+                                    class = "zoomable"
                                     src="images/multi/monastery_ncc.jpg"
                                     alt="Monastery aligned using multi-scale NCC"
                                 >
@@ -1466,6 +1529,7 @@ def pyramid_align(base, moving, window=5, min_size=64):
                         <div class="result-card">
                             <div class="result-image">
                                 <img
+                                    class = "zoomable"
                                     src="images/multi/religous_painting_ncc.jpg"
                                     alt="Religious painting aligned using multi-scale NCC"
                                 >
@@ -1486,6 +1550,7 @@ def pyramid_align(base, moving, window=5, min_size=64):
                         <div class="result-card">
                             <div class="result-image">
                                 <img
+                                    class = "zoomable"
                                     src="images/multi/self_portrait_ncc.jpg"
                                     alt="Self portrait aligned using multi-scale NCC"
                                 >
@@ -1506,6 +1571,7 @@ def pyramid_align(base, moving, window=5, min_size=64):
                         <div class="result-card">
                             <div class="result-image">
                                 <img
+                                    class = "zoomable"
                                     src="images/multi/siren_ncc.jpg"
                                     alt="Siren aligned using multi-scale NCC"
                                 >
@@ -1526,6 +1592,7 @@ def pyramid_align(base, moving, window=5, min_size=64):
                         <div class="result-card">
                             <div class="result-image">
                                 <img
+                                    class = "zoomable"
                                     src="images/multi/three_generations_ncc.jpg"
                                     alt="Three generations aligned using multi-scale NCC"
                                 >
@@ -1546,6 +1613,7 @@ def pyramid_align(base, moving, window=5, min_size=64):
                         <div class="result-card">
                             <div class="result-image">
                                 <img
+                                    class = "zoomable"
                                     src="images/multi/tobolsk_ncc.jpg"
                                     alt="Tobolsk aligned using multi-scale NCC"
                                 >
@@ -1566,6 +1634,7 @@ def pyramid_align(base, moving, window=5, min_size=64):
                         <div class="result-card">
                             <div class="result-image">
                                 <img
+                                    class = "zoomable"
                                     src="images/multi/wharf_ncc.jpg"
                                     alt="Wharf aligned using multi-scale NCC"
                                 >
@@ -1638,6 +1707,7 @@ def pyramid_align(base, moving, window=5, min_size=64):
                             <div class="result-image">
 
                                 <img
+                                    class = "zoomable"
                                     src="images/own/zakat_na_morie_ncc.jpg"
                                     alt="Zakat na mori︠e︡"
                                 >
@@ -1674,6 +1744,7 @@ def pyramid_align(base, moving, window=5, min_size=64):
                             <div class="result-image">
 
                                 <img
+                                    class = "zoomable"
                                     src="images/own/floodgates_ncc.jpg"
                                     alt="Additional image 2"
                                 >
@@ -1709,6 +1780,7 @@ def pyramid_align(base, moving, window=5, min_size=64):
                             <div class="result-image">
 
                                 <img
+                                    class = "zoomable"
                                     src="images/own/v_ital_ncc.jpg"
                                     alt="Additional image 3"
                                 >
@@ -1886,6 +1958,7 @@ def gradient_align(base, moving, window=15):
                         <div class="image-item">
 
                             <img
+                                class = "zoomable"
                                 src="images/multi/emir_ncc.jpg"
                                 alt="Before improvement"
                             >
@@ -1900,6 +1973,7 @@ def gradient_align(base, moving, window=15):
                         <div class="image-item">
 
                             <img
+                                class = "zoomable"
                                 src="images/own/emir.jpg"
                                 alt="After improvement"
                             >
@@ -1920,6 +1994,47 @@ def gradient_align(base, moving, window=15):
 
     </main>
 </div>
+
+<div class="lightbox" id="lightbox">
+    <span class="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+</div>
+
+<script>
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightbox-img");
+    const closeBtn = document.querySelector(".lightbox-close");
+
+    document.querySelectorAll(".zoomable").forEach(img => {
+        img.addEventListener("click", () => {
+            lightboxImg.src = img.src;
+            lightboxImg.alt = img.alt;
+            lightbox.classList.add("active");
+            document.body.style.overflow = "hidden";
+        });
+    });
+
+    function closeLightbox() {
+        lightbox.classList.remove("active");
+        document.body.style.overflow = "";
+    }
+
+    closeBtn.addEventListener("click", closeLightbox);
+
+    lightbox.addEventListener("click", (e) => {
+        if (e.target === lightbox) {
+            closeLightbox();
+        }
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            closeLightbox();
+        }
+    });
+</script>
+
+
 
 </body>
 </html>
