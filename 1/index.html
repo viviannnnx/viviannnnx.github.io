@@ -52,10 +52,6 @@ body {
 }
 
 
-/* =========================
-   BACKGROUND GRID
-========================= */
-
 body::before {
     content: "";
     position: fixed;
@@ -74,10 +70,6 @@ body::before {
 }
 
 
-/* =========================
-   DECORATIVE SIDE LINE
-========================= */
-
 body::after {
     content: "";
 
@@ -94,11 +86,6 @@ body::after {
 
     z-index: -1;
 }
-
-
-/* =========================
-   GLOBAL
-========================= */
 
 .container {
     width: min(var(--max-width), calc(100% - 80px));
@@ -120,31 +107,21 @@ img {
 }
 
 
-/* =========================
-   TOP NAV
-========================= */
-
 .top-nav {
     position: sticky;
     top: 0;
-
     z-index: 100;
-
     height: 64px;
-
     background: rgba(15, 17, 20, 0.94);
-
     border-bottom: 1px solid var(--line);
-
+    scroll-margin-top: 80px;
     backdrop-filter: blur(12px);
 }
 
 .nav-inner {
     width: min(var(--max-width), calc(100% - 80px));
     height: 100%;
-
     margin: auto;
-
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -153,15 +130,11 @@ img {
 .back {
     font-family: 'Rajdhani', sans-serif;
     font-weight: 600;
-
     font-size: 14px;
     letter-spacing: 2px;
     text-transform: uppercase;
-
     text-decoration: none;
-
     color: var(--text-dim);
-
     transition: 0.2s;
 }
 
@@ -178,11 +151,8 @@ img {
     font-size: 11px;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-
     color: var(--text-dim);
-
     text-decoration: none;
-
     transition: 0.2s;
 }
 
@@ -191,108 +161,74 @@ img {
 }
 
 
-/* =========================
-   HERO
-========================= */
-
 .hero {
     min-height: 650px;
-
     display: flex;
     align-items: center;
-
     position: relative;
-
     border-bottom: 1px solid var(--line);
-
     overflow: hidden;
 }
 
 .hero::before {
     content: "01";
-
     position: absolute;
-
     right: -20px;
     bottom: -100px;
-
     font-family: 'Rajdhani', sans-serif;
     font-size: 520px;
     font-weight: 700;
-
     color: rgba(255,255,255,0.025);
-
     line-height: 1;
 }
 
 .hero-content {
     position: relative;
     z-index: 2;
-
     padding: 100px 0;
 }
 
 .eyebrow {
     margin: 0 0 14px;
-
     font-family: 'Rajdhani', sans-serif;
     font-weight: 600;
-
     color: var(--accent);
-
     letter-spacing: 6px;
     text-transform: uppercase;
-
     font-size: 14px;
 }
 
 .hero h1 {
     max-width: 850px;
-
     margin: 0;
-
     font-family: 'Rajdhani', sans-serif;
     font-weight: 700;
-
     font-size: clamp(52px, 8vw, 100px);
-
     line-height: 0.95;
-
     letter-spacing: 2px;
-
     text-transform: uppercase;
 }
 
 .hero-subtitle {
     max-width: 680px;
-
     margin-top: 30px;
-
     color: var(--text-dim);
-
     font-size: 17px;
 }
 
 .hero-meta {
     display: flex;
     gap: 12px;
-
     margin-top: 42px;
-
     flex-wrap: wrap;
 }
 
 .meta {
     border: 1px solid var(--line);
-
     padding: 7px 14px;
-
     font-size: 11px;
-
     letter-spacing: 1.5px;
-
     text-transform: uppercase;
-
     color: var(--text-dim);
 }
 
@@ -300,72 +236,134 @@ img {
     color: var(--accent);
     border-color: var(--accent);
 }
+.page {
+    display: flex;
+    min-height: 100vh;
+}
 
+.page main {
+    flex: 1;
+    min-width: 0;
+}
+.sidebar {
+            width: 220px;
+            flex-shrink: 0;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--line);
+            padding: 40px 0;
+            position: sticky;
+            left: 0;
+            top: 0;
+        }
 
+        .sidebar .back {
+            display: block;
+            margin: 0 30px 30px;
+            text-decoration: none;
+            color: var(--text-dim);
+            font-size: 13px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.2s ease;
+        }
+
+        .sidebar .back:hover {
+            color: var(--accent);
+        }
+
+        .sidebar-label {
+            margin: 0 30px 14px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 12px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        .sidebar nav a {
+            position: relative;
+            display: block;
+            padding: 12px 30px;
+            text-decoration: none;
+            color: var(--text-dim);
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            border-left: 3px solid transparent;
+            transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .sidebar nav a:hover {
+            color: var(--text);
+            background: #1c1f24;
+        }
+
+        .sidebar nav a.active {
+            color: var(--accent);
+            border-left-color: var(--accent);
+            background: #1c1f24;
+        }
+
+        .sidebar nav span.disabled {
+            display: block;
+            padding: 12px 30px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            border-left: 3px solid transparent;
+            color: var(--text-dim);
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
 /* =========================
    SECTION
 ========================= */
 
 section {
     position: relative;
-
     padding: 120px 0;
-
     border-bottom: 1px solid var(--line);
 }
 
 .section-heading {
     display: grid;
-
     grid-template-columns: 150px 1fr;
-
     gap: 40px;
-
     margin-bottom: 65px;
 }
 
 .section-number {
     font-family: 'Rajdhani', sans-serif;
-
     font-size: 82px;
     font-weight: 700;
-
     color: var(--text-dark);
-
     line-height: 0.8;
 }
 
 .section-label {
     margin: 0 0 8px;
-
     font-family: 'Rajdhani', sans-serif;
-
     font-size: 13px;
-
     letter-spacing: 4px;
-
     color: var(--accent);
-
     text-transform: uppercase;
 }
 
 .section-heading h2 {
     margin: 0;
-
     font-family: 'Rajdhani', sans-serif;
-
     font-size: 42px;
-
     line-height: 1.1;
-
     text-transform: uppercase;
 }
 
 .section-heading p {
     max-width: 680px;
-
     color: var(--text-dim);
-
     margin-top: 16px;
 }
 
@@ -382,44 +380,28 @@ section {
 
 .content p {
     color: #c4c6c8;
-
     font-size: 16px;
-
     max-width: 780px;
 }
 
 .lead {
     font-size: 20px !important;
-
     color: var(--text) !important;
-
     line-height: 1.6;
 }
 
-
-/* =========================
-   METHOD CARDS
-========================= */
-
 .method-grid {
     display: grid;
-
     grid-template-columns: repeat(2, 1fr);
-
     gap: 20px;
-
     margin-top: 40px;
 }
 
 .method-card {
     position: relative;
-
     background: var(--bg-panel);
-
     border: 1px solid var(--line);
-
     padding: 30px;
-
     clip-path:
         polygon(
             0 0,
@@ -432,33 +414,24 @@ section {
 
 .method-card::before {
     content: "";
-
     position: absolute;
-
     top: 0;
     left: 0;
-
     width: 4px;
     height: 100%;
-
     background: var(--accent);
 }
 
 .method-card h3 {
     margin: 0 0 12px;
-
     font-family: 'Rajdhani', sans-serif;
-
     font-size: 25px;
-
     text-transform: uppercase;
 }
 
 .method-card p {
     margin: 0;
-
     color: var(--text-dim);
-
     font-size: 14px;
 }
 
@@ -473,84 +446,52 @@ section {
 
 .code-label {
     display: block;
-
     margin-bottom: 8px;
-
     font-family: 'Rajdhani', sans-serif;
-
     font-size: 12px;
-
     color: var(--accent);
-
     letter-spacing: 2px;
-
     text-transform: uppercase;
 }
 
 pre {
     margin: 0;
-
     padding: 25px;
-
     overflow-x: auto;
-
     background: #090b0d;
-
     border: 1px solid var(--line);
-
     color: #bfc3c7;
-
     font-family: 'Courier New', monospace;
-
     font-size: 13px;
-
     line-height: 1.7;
 }
 
 
-/* =========================
-   IMAGE PLACEHOLDER
-========================= */
-
 .image-placeholder {
     min-height: 320px;
-
     background:
         linear-gradient(
             135deg,
             #15181c,
             #0c0e11
         );
-
     border: 1px solid var(--line);
-
     display: flex;
-
     align-items: center;
     justify-content: center;
-
     color: var(--text-dark);
-
     font-family: 'Rajdhani', sans-serif;
-
     letter-spacing: 3px;
-
     text-transform: uppercase;
-
     position: relative;
-
     overflow: hidden;
 }
 
 .image-placeholder::after {
     content: "IMAGE";
-
     position: absolute;
-
     font-size: 100px;
-
     font-weight: 700;
-
     opacity: 0.04;
 }
 
@@ -558,11 +499,6 @@ pre {
     width: 100%;
     height: auto;
 }
-
-
-/* =========================
-   RESULT GRID
-========================= */
 
 .results-grid {
     display: grid;
@@ -583,7 +519,6 @@ pre {
     cursor: pointer;
 }
 
-/* VALORANT-style hover */
 .result-card:hover {
     transform: scale(1.06);
     border-color: var(--accent);
@@ -648,7 +583,6 @@ pre {
     text-transform: uppercase;
 }
 
-/* Slightly larger cards at medium widths */
 @media (max-width: 1000px) {
     .results-grid {
         grid-template-columns: repeat(3, 1fr);
@@ -667,97 +601,62 @@ pre {
     }
 }
 
-/* =========================
-   FULL WIDTH RESULT
-========================= */
 
 .result-wide {
     margin-top: 30px;
-
     background: var(--bg-panel);
-
     border: 1px solid var(--line);
-
     padding: 25px;
 }
 
 
-/* =========================
-   COMPARISON
-========================= */
-
 .comparison {
     display: grid;
-
     grid-template-columns: repeat(2, 1fr);
-
     gap: 20px;
-
     margin-top: 45px;
 }
 
 .compare-card {
     background: var(--bg-panel);
-
     border: 1px solid var(--line);
-
     padding: 25px;
 }
 
 .compare-card h3 {
     margin: 0 0 20px;
-
     font-family: 'Rajdhani', sans-serif;
-
     text-transform: uppercase;
-
     font-size: 24px;
 }
 
 .compare-card .tag {
     display: inline-block;
-
     margin-bottom: 15px;
-
     font-size: 10px;
-
     letter-spacing: 2px;
-
     color: var(--accent);
-
     text-transform: uppercase;
 }
 
 
-/* =========================
-   CALLOUT
-========================= */
-
 .callout {
     margin: 45px 0;
-
     padding: 30px 35px;
-
     border-left: 3px solid var(--accent);
-
     background: var(--accent-soft);
 }
 
 .callout strong {
     display: block;
-
     margin-bottom: 8px;
-
     font-family: 'Rajdhani', sans-serif;
-
     font-size: 20px;
-
     text-transform: uppercase;
 }
 
 .callout p {
     margin: 0;
-
     color: #c9cbcd;
 }
 
@@ -768,67 +667,47 @@ pre {
 
 .table-wrapper {
     overflow-x: auto;
-
     margin-top: 40px;
 }
 
 table {
     width: 100%;
-
     border-collapse: collapse;
-
     background: var(--bg-panel);
-
     border: 1px solid var(--line);
 }
 
 th,
 td {
     padding: 16px 18px;
-
     text-align: left;
-
     border-bottom: 1px solid var(--line);
 }
 
 th {
     font-family: 'Rajdhani', sans-serif;
-
     font-size: 13px;
-
     text-transform: uppercase;
-
     letter-spacing: 1.5px;
-
     color: var(--accent);
 }
 
 td {
     color: var(--text-dim);
-
     font-size: 14px;
 }
 
 
-/* =========================
-   IMAGE PAIR
-========================= */
-
 .image-pair {
     display: grid;
-
     grid-template-columns: repeat(2, 1fr);
-
     gap: 20px;
-
     margin: 40px 0;
 }
 
 .image-item {
     background: var(--bg-panel);
-
     border: 1px solid var(--line);
-
     padding: 10px;
 }
 
@@ -838,44 +717,29 @@ td {
 
 .image-caption {
     padding: 12px 8px 5px;
-
     font-family: 'Rajdhani', sans-serif;
-
     font-size: 13px;
-
     letter-spacing: 1px;
-
     text-transform: uppercase;
-
     color: var(--text-dim);
 }
 
 
-/* =========================
-   CONCLUSION
-========================= */
-
 .conclusion {
     text-align: center;
-
     padding: 140px 20px;
 }
 
 .conclusion h2 {
     font-family: 'Rajdhani', sans-serif;
-
     font-size: 55px;
-
     text-transform: uppercase;
-
     margin: 0 0 20px;
 }
 
 .conclusion p {
     max-width: 650px;
-
     margin: auto;
-
     color: var(--text-dim);
 }
 
@@ -886,20 +750,12 @@ td {
 
 footer {
     padding: 40px 0;
-
     color: var(--text-dark);
-
     font-size: 12px;
-
     letter-spacing: 2px;
-
     text-transform: uppercase;
 }
 
-
-/* =========================
-   RESPONSIVE
-========================= */
 
 @media (max-width: 800px) {
 
@@ -965,219 +821,225 @@ footer {
 </style>
 </head>
 
-
 <body>
 
+<div class="page">
+    
+    <aside class="sidebar">
+            <a class="back" href="../index.html">&larr; Back to Portfolio</a>
 
-<!-- =========================
-     NAVIGATION
-========================= -->
+            <p class="sidebar-label">Projects</p>
+            <nav>
+                <a href="../0/index.html">00 &middot; Camera</a>
+                <a class="active" href="../1/index.html">01 &middot; Prokudin-Gorskii</a>
+                <span class="disabled" aria-disabled="true">02 &middot;  Filters &amp; Frequencies</span>
+                <span class="disabled" aria-disabled="true">03 &middot; Diffusion Models</span>
+                <span class="disabled" aria-disabled="true">04 &middot; (Auto)stitching &amp;  Mosaics</span>
+                <span class="disabled" aria-disabled="true">05 &middot; Final Project</span>
+            </nav>
+    </aside>
 
-<nav class="top-nav">
+    <main>
 
-    <div class="nav-inner">
+        <nav class="top-nav">
 
-        <a class="back" href="../index.html">
-            ← Portfolio
-        </a>
+            <div class="nav-inner">
 
-        <div class="nav-links">
+                <div class="nav-links">
 
-            <a href="#single">
-                Single Scale
-            </a>
+                    <a href="#single">
+                        Single Scale
+                    </a>
 
-            <a href="#pyramid">
-                Pyramid
-            </a>
+                    <a href="#pyramid">
+                        Pyramid
+                    </a>
 
-            <a href="#additional">
-                Additional
-            </a>
+                    <a href="#additional">
+                        Additional
+                    </a>
 
-            <a href="#improvement">
-                Improvement
-            </a>
+                    <a href="#improvement">
+                        Improvement
+                    </a>
 
-            <a href="#bells">
-                Bells & Whistles
-            </a>
+                    <a href="#bells">
+                        Bells & Whistles
+                    </a>
 
-        </div>
-
-    </div>
-
-</nav>
-
-
-
-<!-- =========================
-     HERO
-========================= -->
-
-<header class="hero">
-
-    <div class="container">
-
-        <div class="hero-content">
-
-            <p class="eyebrow">
-                CS 180 · Project 01
-            </p>
-
-            <h1>
-                Images of the<br>
-                Russian Empire
-            </h1>
-
-            <p class="hero-subtitle">
-
-                Colorizing the Prokudin-Gorskii Photo Collection
-                through image alignment, multi-scale search,
-                and gradient-based matching.
-
-            </p>
-
-        </div>
-
-    </div>
-
-</header>
-
-
-
-<!-- =========================
-     INTRODUCTION
-========================= -->
-
-<section id="intro">
-
-    <div class="container">
-
-        <div class="section-heading">
-
-            <div class="section-number">
-                00
-            </div>
-
-            <div>
-
-                <p class="section-label">
-                    Mission Brief
-                </p>
-
-                <h2>
-                    Introduction
-                </h2>
-
-                <p>
-                    The Prokudin-Gorskii collection contains
-                    historical photographs captured as three
-                    separate color exposures. The goal of this
-                    project is to reconstruct these grayscale
-                    exposures into a single color image.
-                </p>
+                </div>
 
             </div>
 
-        </div>
+        </nav>
 
+        <header class="hero">
 
-        <div class="content">
+            <div class="container">
 
-            <p class="lead">
-                The core challenge is alignment: the three
-                color channels were captured separately, so
-                their pixels do not initially line up.
-            </p>
+                <div class="hero-content">
 
-            <p>
-                For each photograph, I treated the blue channel
-                as the reference and search for the displacement
-                of the green and red channels that produces the
-                best match.
-            </p>
+                    <p class="eyebrow">
+                        CS 180 · Project 01
+                    </p>
 
-        </div>
+                    <h1>
+                        Images of the<br>
+                        Russian Empire
+                    </h1>
 
-    </div>
+                    <p class="hero-subtitle">
 
-</section>
+                        Colorizing the Prokudin-Gorskii Photo Collection
+                        through image alignment, multi-scale search,
+                        and gradient-based matching.
 
-
-
-<!-- =========================
-     SINGLE SCALE
-========================= -->
-
-<section id="single">
-
-    <div class="container">
-
-        <div class="section-heading">
-
-            <div class="section-number">
-                01
-            </div>
-
-            <div>
-
-                <p class="section-label">
-                    Phase One
-                </p>
-
-                <h2>
-                    Single-Scale Alignment
-                </h2>
-
-                <p>
-                    Establishing a baseline using exhaustive
-                    search with normalized
-                    cross-correlation (NCC).
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="content">
-
-            <p class="lead">
-                I first implemented alignment at a single
-                resolution.
-            </p>
-
-
-            <div class="method-grid">
-
-                <div class="method-card">
-
-                    <h3>
-                        NCC
-                    </h3>
-
-                    <p>
-                        Measures normalized correlation between
-                        the two channels, reducing sensitivity
-                        to overall brightness differences.
                     </p>
 
                 </div>
 
             </div>
 
+        </header>
 
-            <!-- CODE PLACEHOLDER -->
 
-            <div class="code-wrapper">
+        <section id="intro">
 
-                <span class="code-label">
-                    Alignment Implementation
-                </span>
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <div class="section-number">
+                        00
+                    </div>
+
+                    <div>
+
+                        <p class="section-label">
+                            Mission Brief
+                        </p>
+
+                        <h2>
+                            Introduction
+                        </h2>
+
+                        <p>
+                            The Prokudin-Gorskii collection contains
+                            historical photographs captured as three
+                            separate color exposures. The goal of this
+                            project is to reconstruct these grayscale
+                            exposures into a single color image.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="content">
+
+                    <p class="lead">
+                        The core challenge is alignment: the three
+                        color channels were captured separately, so
+                        their pixels do not initially line up.
+                    </p>
+
+                    <p>
+                        For each photograph, I treated the blue channel
+                        as the reference and search for the displacement
+                        of the green and red channels that produces the
+                        best match.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section id="single">
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <div class="section-number">
+                        01
+                    </div>
+
+                    <div>
+
+                        <p class="section-label">
+                            Phase One
+                        </p>
+
+                        <h2>
+                            Single-Scale Alignment
+                        </h2>
+
+                        <p>
+                            Establishing a baseline using exhaustive
+                            search with normalized
+                            cross-correlation (NCC).
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="content">
+
+                    <p class="lead">
+                        I first implemented alignment at a single
+                        resolution.
+                    </p>
+
+
+                    <div class="method-grid">
+
+                        <div class="method-card">
+
+                            <h3>
+                                NCC
+                            </h3>
+
+                            <p>
+                                Measures normalized correlation between
+                                the two channels, reducing sensitivity
+                                to overall brightness differences.
+                            </p>
+
+                        </div>
+
+                        <div class="method-card">
+
+                            <h3>
+                                NCC score calculation
+                            </h3>
 
 <pre><code>
-def align(base, moving, window=15, metric='ncc'):
+    def ncc_score(im1, im2):
+        v1 = (im1 - im1.mean()).flatten()
+        v2 = (im2 - im2.mean()).flatten()
+        return np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
+</code></pre>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="code-wrapper">
+
+                        <span class="code-label">
+                            Alignment Implementation
+                        </span>
+
+<pre><code>
+def align(base, moving, window=15):
     best_score = 0
     best_offset = (0, 0)
     for dy in range(-window, window + 1):
@@ -1191,804 +1053,792 @@ def align(base, moving, window=15, metric='ncc'):
     return best_offset
 </code></pre>
 
-            </div>
-
-
-            <h3 class="section-label">
-                Baseline Results
-            </h3>
-
-
-            <div class="results-grid">
-
-                <div class="result-card">
-
-                    <div class="result-image">
-
-                        <img
-                            src="images/single/cathedral_ncc.jpg"
-                            alt="Cathedral aligned result"
-                        >
-
                     </div>
 
-                    <div class="result-info">
 
-                        <h3 class="result-name">
-                            Cathedral
-                        </h3>
-
-                        <div class="offsets">
-
-                            <span class="offset">
-                                NCC · G: (2, 5)
-                            </span>
-
-                            <span class="offset">
-                                NCC · R: (3, 12)
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Monastery -->
-
-                <div class="result-card">
-
-                    <div class="result-image">
-
-                        <img
-                            src="images/single/monastery_ncc.jpg"
-                            alt="Monastery aligned result"
-                        >
-
-                    </div>
-
-                    <div class="result-info">
-
-                        <h3 class="result-name">
-                            Monastery
-                        </h3>
-
-                        <div class="offsets">
-
-                            <span class="offset">
-                                G: (2, -3)
-                            </span>
-
-                            <span class="offset">
-                                R: (2, 3)
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Tobolsk -->
-
-                <div class="result-card">
-
-                    <div class="result-image">
-
-                        <img
-                            src="images/single/tobolsk_ncc.jpg"
-                            alt="Tobolsk aligned result"
-                        >
-
-                    </div>
-
-                    <div class="result-info">
-
-                        <h3 class="result-name">
-                            Tobolsk
-                        </h3>
-
-                        <div class="offsets">
-
-                            <span class="offset">
-                                G: (3, 3)
-                            </span>
-
-                            <span class="offset">
-                                R: (3, 6)
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================
-     PYRAMID
-========================= -->
-
-<section id="pyramid">
-
-    <div class="container">
-
-        <div class="section-heading">
-
-            <div class="section-number">
-                02
-            </div>
-
-            <div>
-
-                <p class="section-label">
-                    Phase Two
-                </p>
-
-                <h2>
-                    Multi-Scale Pyramid
-                </h2>
-
-                <p>
-                    Scaling the alignment process to the
-                    high-resolution TIFF images.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="content">
-
-            <p class="lead">
-                Exhaustively searching every possible offset
-                becomes impractical as image resolution and
-                displacement increase. For example, the other 
-                images are far larger than the previous few, 
-                thus processing them using the single alignment
-                algorithm would take too long.
-            </p>
-
-
-            <p>
-                I therefore used a coarse-to-fine image pyramid.
-                The alignment is first estimated at a lower
-                resolution and then refined at progressively
-                higher resolutions.
-            </p>
-
-
-            <!-- PYRAMID DIAGRAM -->
-
-            <div class="method-grid">
-
-                <div class="method-card">
-
-                    <h3>
-                        Coarse Search
+                    <h3 class="section-label">
+                        Baseline Results
                     </h3>
 
-                    <p>
-                        Large displacements can be searched
-                        efficiently on a small image.
-                    </p>
 
-                </div>
+                    <div class="results-grid">
+
+                        <div class="result-card">
+
+                            <div class="result-image">
+
+                                <img
+                                    src="images/single/cathedral_ncc.jpg"
+                                    alt="Cathedral aligned result"
+                                >
+
+                            </div>
+
+                            <div class="result-info">
+
+                                <h3 class="result-name">
+                                    Cathedral
+                                </h3>
+
+                                <div class="offsets">
+
+                                    <span class="offset">
+                                        NCC · G: (2, 5)
+                                    </span>
+
+                                    <span class="offset">
+                                        NCC · R: (3, 12)
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
 
 
-                <div class="method-card">
+                        <!-- Monastery -->
 
-                    <h3>
-                        Fine Refinement
-                    </h3>
+                        <div class="result-card">
 
-                    <p>
-                        The estimated displacement is scaled
-                        and refined at each higher resolution.
-                    </p>
+                            <div class="result-image">
+
+                                <img
+                                    src="images/single/monastery_ncc.jpg"
+                                    alt="Monastery aligned result"
+                                >
+
+                            </div>
+
+                            <div class="result-info">
+
+                                <h3 class="result-name">
+                                    Monastery
+                                </h3>
+
+                                <div class="offsets">
+
+                                    <span class="offset">
+                                        G: (2, -3)
+                                    </span>
+
+                                    <span class="offset">
+                                        R: (2, 3)
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Tobolsk -->
+
+                        <div class="result-card">
+
+                            <div class="result-image">
+
+                                <img
+                                    src="images/single/tobolsk_ncc.jpg"
+                                    alt="Tobolsk aligned result"
+                                >
+
+                            </div>
+
+                            <div class="result-info">
+
+                                <h3 class="result-name">
+                                    Tobolsk
+                                </h3>
+
+                                <div class="offsets">
+
+                                    <span class="offset">
+                                        G: (3, 3)
+                                    </span>
+
+                                    <span class="offset">
+                                        R: (3, 6)
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
             </div>
 
+        </section>
 
-            <div class="code-wrapper">
 
-                <span class="code-label">
-                    Coarse-to-Fine Algorithm 
-                </span>
+        <section id="pyramid">
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <div class="section-number">
+                        02
+                    </div>
+
+                    <div>
+
+                        <p class="section-label">
+                            Phase Two
+                        </p>
+
+                        <h2>
+                            Multi-Scale Pyramid
+                        </h2>
+
+                        <p>
+                            Scaling the alignment process to the
+                            high-resolution TIFF images.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="content">
+
+                    <p class="lead">
+                        Exhaustively searching every possible offset
+                        becomes impractical as image resolution and
+                        displacement increase. For example, the other 
+                        images are far larger than the previous few, 
+                        thus processing them using the single alignment
+                        algorithm would take too long.
+                    </p>
+
+
+                    <p>
+                        I therefore used a coarse-to-fine image pyramid.
+                        The alignment is first estimated at a lower
+                        resolution and then refined at progressively
+                        higher resolutions.
+                    </p>
+
+
+                    <!-- PYRAMID DIAGRAM -->
+
+                    <div class="method-grid">
+
+                        <div class="method-card">
+
+                            <h3>
+                                Coarse Search
+                            </h3>
+
+                            <p>
+                                Large displacements can be searched
+                                efficiently on a small image.
+                            </p>
+
+                        </div>
+
+
+                        <div class="method-card">
+
+                            <h3>
+                                Fine Refinement
+                            </h3>
+
+                            <p>
+                                The estimated displacement is scaled
+                                and refined at each higher resolution.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="code-wrapper">
+
+                        <span class="code-label">
+                            Coarse-to-Fine Algorithm 
+                        </span>
 
 <pre><code>
-def pyramid_align(base, moving, metric, window=5, min_size=64):
+def pyramid_align(base, moving, window=5, min_size=64):
     if min(base.shape[:2]) <= min_size:
-        return align(base, moving, window=15, metric=metric)  
+        return align(base, moving, window=15)  
 
     small_base = resize_half(base)
     small_moving = resize_half(moving)
-    dx_coarse, dy_coarse = pyramid_align(small_base, small_moving, metric=metric, window=window, min_size=min_size)
+    dx_coarse, dy_coarse = pyramid_align(small_base, small_moving, window=window, min_size=min_size)
 
     dx_guess, dy_guess = dx_coarse * 2, dy_coarse * 2
 
     pre_shifted = shift_im(moving, dx_guess, dy_guess)
-    dx_refine, dy_refine = align(base, pre_shifted, window=window, metric=metric)
+    dx_refine, dy_refine = align(base, pre_shifted, window=window)
 
     return dx_guess + dx_refine, dy_guess + dy_refine
 </code></pre>
 
-            </div>
-
-
-            <h3 class="section-label">
-                Multi-Scale Results
-            </h3>
-
-
-            <p>
-                I applied the multi-scale NCC alignment to all 14 provided
-                high-resolution photographs. The coarse-to-fine search allows
-                the algorithm to handle much larger displacements than the
-                single-scale approach while keeping the search computationally
-                manageable.
-            </p>
-
-            <p class="lead">
-                Hover over each result to inspect the reconstructed image.
-            </p>
-
-            <div class="results-grid">
-
-                <!-- 01 / Cathedral -->
-                <div class="result-card">
-                    <div class="result-image">
-                        <img
-                            src="images/multi/cathedral_ncc.jpg"
-                            alt="Cathedral aligned using multi-scale NCC"
-                        >
                     </div>
 
-                    <div class="result-info">
-                        <h3 class="result-name">Cathedral</h3>
 
-                        <div class="offsets">
-                            <span class="offset">NCC · G: (2, 5)</span>
-                            <span class="offset">NCC · R: (3, 12)</span>
+                    <h3 class="section-label">
+                        Multi-Scale Results
+                    </h3>
+
+
+                    <p>
+                        I applied the multi-scale NCC alignment to all 14 provided
+                        high-resolution photographs. The coarse-to-fine search allows
+                        the algorithm to handle much larger displacements than the
+                        single-scale approach while keeping the search computationally
+                        manageable.
+                    </p>
+
+                    <p class="lead">
+                        Hover over each result to inspect the reconstructed image.
+                    </p>
+
+                    <div class="results-grid">
+
+                        <!-- 01 / Cathedral -->
+                        <div class="result-card">
+                            <div class="result-image">
+                                <img
+                                    src="images/multi/cathedral_ncc.jpg"
+                                    alt="Cathedral aligned using multi-scale NCC"
+                                >
+                            </div>
+
+                            <div class="result-info">
+                                <h3 class="result-name">Cathedral</h3>
+
+                                <div class="offsets">
+                                    <span class="offset">NCC · G: (2, 5)</span>
+                                    <span class="offset">NCC · R: (3, 12)</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
 
-                <!-- 02 / Church -->
-                <div class="result-card">
-                    <div class="result-image">
-                        <img
-                            src="images/multi/church_ncc.jpg"
-                            alt="Church aligned using multi-scale NCC"
-                        >
-                    </div>
+                        <!-- 02 / Church -->
+                        <div class="result-card">
+                            <div class="result-image">
+                                <img
+                                    src="images/multi/church_ncc.jpg"
+                                    alt="Church aligned using multi-scale NCC"
+                                >
+                            </div>
 
-                    <div class="result-info">
-                        <h3 class="result-name">Church</h3>
+                            <div class="result-info">
+                                <h3 class="result-name">Church</h3>
 
-                        <div class="offsets">
-                            <span class="offset">NCC · G: (4, 25)</span>
-                            <span class="offset">NCC · R: (-4, 58)</span>
+                                <div class="offsets">
+                                    <span class="offset">NCC · G: (4, 25)</span>
+                                    <span class="offset">NCC · R: (-4, 58)</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
 
-                <!-- 03 / Emir -->
-                <div class="result-card">
-                    <div class="result-image">
-                        <img
-                            src="images/multi/emir_ncc.jpg"
-                            alt="Emir aligned using multi-scale NCC"
-                        >
-                    </div>
+                        <!-- 03 / Emir -->
+                        <div class="result-card">
+                            <div class="result-image">
+                                <img
+                                    src="images/multi/emir_ncc.jpg"
+                                    alt="Emir aligned using multi-scale NCC"
+                                >
+                            </div>
 
-                    <div class="result-info">
-                        <h3 class="result-name">Emir</h3>
+                            <div class="result-info">
+                                <h3 class="result-name">Emir</h3>
 
-                        <div class="offsets">
-                            <span class="offset">NCC · G: (24, 49)</span>
-                            <span class="offset">NCC · R: (-787, 414)</span>
+                                <div class="offsets">
+                                    <span class="offset">NCC · G: (24, 49)</span>
+                                    <span class="offset">NCC · R: (-787, 414)</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
 
-                <!-- 04 / Harvesters -->
-                <div class="result-card">
-                    <div class="result-image">
-                        <img
-                            src="images/multi/harvesters_ncc.jpg"
-                            alt="Harvesters aligned using multi-scale NCC"
-                        >
-                    </div>
+                        <!-- 04 / Harvesters -->
+                        <div class="result-card">
+                            <div class="result-image">
+                                <img
+                                    src="images/multi/harvesters_ncc.jpg"
+                                    alt="Harvesters aligned using multi-scale NCC"
+                                >
+                            </div>
 
-                    <div class="result-info">
-                        <h3 class="result-name">Harvesters</h3>
+                            <div class="result-info">
+                                <h3 class="result-name">Harvesters</h3>
 
-                        <div class="offsets">
-                            <span class="offset">NCC · G: (17, 60)</span>
-                            <span class="offset">NCC · R: (14, 124)</span>
+                                <div class="offsets">
+                                    <span class="offset">NCC · G: (17, 60)</span>
+                                    <span class="offset">NCC · R: (14, 124)</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
 
-                <!-- 05 / Icon -->
-                <div class="result-card">
-                    <div class="result-image">
-                        <img
-                            src="images/multi/icon_ncc.jpg"
-                            alt="Icon aligned using multi-scale NCC"
-                        >
-                    </div>
+                        <!-- 05 / Icon -->
+                        <div class="result-card">
+                            <div class="result-image">
+                                <img
+                                    src="images/multi/icon_ncc.jpg"
+                                    alt="Icon aligned using multi-scale NCC"
+                                >
+                            </div>
 
-                    <div class="result-info">
-                        <h3 class="result-name">Icon</h3>
+                            <div class="result-info">
+                                <h3 class="result-name">Icon</h3>
 
-                        <div class="offsets">
-                            <span class="offset">NCC · G: (17, 41)</span>
-                            <span class="offset">NCC · R: (23, 89)</span>
+                                <div class="offsets">
+                                    <span class="offset">NCC · G: (17, 41)</span>
+                                    <span class="offset">NCC · R: (23, 89)</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
 
-                <!-- 06 / Ilemelsga -->
-                <div class="result-card">
-                    <div class="result-image">
-                        <img
-                            src="images/multi/ilemselga_ncc.jpg"
-                            alt="Ilemelsga aligned using multi-scale NCC"
-                        >
-                    </div>
+                        <!-- 06 / Ilemelsga -->
+                        <div class="result-card">
+                            <div class="result-image">
+                                <img
+                                    src="images/multi/ilemselga_ncc.jpg"
+                                    alt="Ilemelsga aligned using multi-scale NCC"
+                                >
+                            </div>
 
-                    <div class="result-info">
-                        <h3 class="result-name">Ilemelsga</h3>
+                            <div class="result-info">
+                                <h3 class="result-name">Ilemelsga</h3>
 
-                        <div class="offsets">
-                            <span class="offset">NCC · G: (7, 40)</span>
-                            <span class="offset">NCC · R: (11, 130)</span>
+                                <div class="offsets">
+                                    <span class="offset">NCC · G: (7, 40)</span>
+                                    <span class="offset">NCC · R: (11, 130)</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
 
-                <!-- 07 / Melons -->
-                <div class="result-card">
-                    <div class="result-image">
-                        <img
-                            src="images/multi/melons_ncc.jpg"
-                            alt="Melons aligned using multi-scale NCC"
-                        >
-                    </div>
+                        <!-- 07 / Melons -->
+                        <div class="result-card">
+                            <div class="result-image">
+                                <img
+                                    src="images/multi/melons_ncc.jpg"
+                                    alt="Melons aligned using multi-scale NCC"
+                                >
+                            </div>
 
-                    <div class="result-info">
-                        <h3 class="result-name">Melons</h3>
+                            <div class="result-info">
+                                <h3 class="result-name">Melons</h3>
 
-                        <div class="offsets">
-                            <span class="offset">NCC · G: (11, 82)</span>
-                            <span class="offset">NCC · R: (13, 178)</span>
+                                <div class="offsets">
+                                    <span class="offset">NCC · G: (11, 82)</span>
+                                    <span class="offset">NCC · R: (13, 178)</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
 
-                <!-- 08 / Monastery -->
-                <div class="result-card">
-                    <div class="result-image">
-                        <img
-                            src="images/multi/monastery_ncc.jpg"
-                            alt="Monastery aligned using multi-scale NCC"
-                        >
-                    </div>
+                        <!-- 08 / Monastery -->
+                        <div class="result-card">
+                            <div class="result-image">
+                                <img
+                                    src="images/multi/monastery_ncc.jpg"
+                                    alt="Monastery aligned using multi-scale NCC"
+                                >
+                            </div>
 
-                    <div class="result-info">
-                        <h3 class="result-name">Monastery</h3>
+                            <div class="result-info">
+                                <h3 class="result-name">Monastery</h3>
 
-                        <div class="offsets">
-                            <span class="offset">NCC · G: (2, -3)</span>
-                            <span class="offset">NCC · R: (2, 3)</span>
+                                <div class="offsets">
+                                    <span class="offset">NCC · G: (2, -3)</span>
+                                    <span class="offset">NCC · R: (2, 3)</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
 
-                <!-- 09 / Religious Painting -->
-                <div class="result-card">
-                    <div class="result-image">
-                        <img
-                            src="images/multi/religous_painting_ncc.jpg"
-                            alt="Religious painting aligned using multi-scale NCC"
-                        >
-                    </div>
+                        <!-- 09 / Religious Painting -->
+                        <div class="result-card">
+                            <div class="result-image">
+                                <img
+                                    src="images/multi/religous_painting_ncc.jpg"
+                                    alt="Religious painting aligned using multi-scale NCC"
+                                >
+                            </div>
 
-                    <div class="result-info">
-                        <h3 class="result-name">Religious Painting</h3>
+                            <div class="result-info">
+                                <h3 class="result-name">Religious Painting</h3>
 
-                        <div class="offsets">
-                            <span class="offset">NCC · G: (3, 28)</span>
-                            <span class="offset">NCC · R: (7, 68)</span>
+                                <div class="offsets">
+                                    <span class="offset">NCC · G: (3, 28)</span>
+                                    <span class="offset">NCC · R: (7, 68)</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
 
-                <!-- 10 / Self Portrait -->
-                <div class="result-card">
-                    <div class="result-image">
-                        <img
-                            src="images/multi/self_portrait_ncc.jpg"
-                            alt="Self portrait aligned using multi-scale NCC"
-                        >
-                    </div>
+                        <!-- 10 / Self Portrait -->
+                        <div class="result-card">
+                            <div class="result-image">
+                                <img
+                                    src="images/multi/self_portrait_ncc.jpg"
+                                    alt="Self portrait aligned using multi-scale NCC"
+                                >
+                            </div>
 
-                    <div class="result-info">
-                        <h3 class="result-name">Self Portrait</h3>
+                            <div class="result-info">
+                                <h3 class="result-name">Self Portrait</h3>
 
-                        <div class="offsets">
-                            <span class="offset">NCC · G: (29, 79)</span>
-                            <span class="offset">NCC · R: (37, 176)</span>
+                                <div class="offsets">
+                                    <span class="offset">NCC · G: (29, 79)</span>
+                                    <span class="offset">NCC · R: (37, 176)</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
 
-                <!-- 11 / Siren -->
-                <div class="result-card">
-                    <div class="result-image">
-                        <img
-                            src="images/multi/siren_ncc.jpg"
-                            alt="Siren aligned using multi-scale NCC"
-                        >
-                    </div>
+                        <!-- 11 / Siren -->
+                        <div class="result-card">
+                            <div class="result-image">
+                                <img
+                                    src="images/multi/siren_ncc.jpg"
+                                    alt="Siren aligned using multi-scale NCC"
+                                >
+                            </div>
 
-                    <div class="result-info">
-                        <h3 class="result-name">Siren</h3>
+                            <div class="result-info">
+                                <h3 class="result-name">Siren</h3>
 
-                        <div class="offsets">
-                            <span class="offset">NCC · G: (-6, 49)</span>
-                            <span class="offset">NCC · R: (-25, 96)</span>
+                                <div class="offsets">
+                                    <span class="offset">NCC · G: (-6, 49)</span>
+                                    <span class="offset">NCC · R: (-25, 96)</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
 
-                <!-- 12 / Three Generations -->
-                <div class="result-card">
-                    <div class="result-image">
-                        <img
-                            src="images/multi/three_generations_ncc.jpg"
-                            alt="Three generations aligned using multi-scale NCC"
-                        >
-                    </div>
+                        <!-- 12 / Three Generations -->
+                        <div class="result-card">
+                            <div class="result-image">
+                                <img
+                                    src="images/multi/three_generations_ncc.jpg"
+                                    alt="Three generations aligned using multi-scale NCC"
+                                >
+                            </div>
 
-                    <div class="result-info">
-                        <h3 class="result-name">Three Generations</h3>
+                            <div class="result-info">
+                                <h3 class="result-name">Three Generations</h3>
 
-                        <div class="offsets">
-                            <span class="offset">NCC · G: (14, 53)</span>
-                            <span class="offset">NCC · R: (11, 112)</span>
+                                <div class="offsets">
+                                    <span class="offset">NCC · G: (14, 53)</span>
+                                    <span class="offset">NCC · R: (11, 112)</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
 
-                <!-- 13 / Tobolsk -->
-                <div class="result-card">
-                    <div class="result-image">
-                        <img
-                            src="images/multi/tobolsk_ncc.jpg"
-                            alt="Tobolsk aligned using multi-scale NCC"
-                        >
-                    </div>
+                        <!-- 13 / Tobolsk -->
+                        <div class="result-card">
+                            <div class="result-image">
+                                <img
+                                    src="images/multi/tobolsk_ncc.jpg"
+                                    alt="Tobolsk aligned using multi-scale NCC"
+                                >
+                            </div>
 
-                    <div class="result-info">
-                        <h3 class="result-name">Tobolsk</h3>
+                            <div class="result-info">
+                                <h3 class="result-name">Tobolsk</h3>
 
-                        <div class="offsets">
-                            <span class="offset">NCC · G: (3, 3)</span>
-                            <span class="offset">NCC · R: (3, 6)</span>
+                                <div class="offsets">
+                                    <span class="offset">NCC · G: (3, 3)</span>
+                                    <span class="offset">NCC · R: (3, 6)</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
 
-                <!-- 14 / Wharf -->
-                <div class="result-card">
-                    <div class="result-image">
-                        <img
-                            src="images/multi/wharf_ncc.jpg"
-                            alt="Wharf aligned using multi-scale NCC"
-                        >
-                    </div>
+                        <!-- 14 / Wharf -->
+                        <div class="result-card">
+                            <div class="result-image">
+                                <img
+                                    src="images/multi/wharf_ncc.jpg"
+                                    alt="Wharf aligned using multi-scale NCC"
+                                >
+                            </div>
 
-                    <div class="result-info">
-                        <h3 class="result-name">Wharf</h3>
+                            <div class="result-info">
+                                <h3 class="result-name">Wharf</h3>
 
-                        <div class="offsets">
-                            <span class="offset">NCC · G: (-7, 15)</span>
-                            <span class="offset">NCC · R: (-16, 83)</span>
+                                <div class="offsets">
+                                    <span class="offset">NCC · G: (-7, 15)</span>
+                                    <span class="offset">NCC · R: (-16, 83)</span>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
+
                 </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================
-     ADDITIONAL IMAGES
-========================= -->
-
-<section id="additional">
-
-    <div class="container">
-
-        <div class="section-heading">
-
-            <div class="section-number">
-                03
-            </div>
-
-            <div>
-
-                <p class="section-label">
-                    Field Test
-                </p>
-
-                <h2>
-                    Additional Images
-                </h2>
-
-                <p>
-                    Testing the alignment algorithm on three additional Prokudin-Gorskii photographs.
-                </p>
 
             </div>
 
-        </div>
+        </section>
 
 
-        <div class="content">
+        <section id="additional">
 
-            <p class="lead">
-                After establishing the multi-scale method, I tested it on three additional images to see how well the approach generalizes.
-            </p>
+            <div class="container">
 
+                <div class="section-heading">
 
-            <div class="results-grid">
-
-                <!-- Own Image 01 -->
-
-                <div class="result-card">
-
-                    <div class="result-image">
-
-                        <img
-                            src="images/own/zakat_na_morie_ncc.jpg"
-                            alt="Zakat na mori︠e︡"
-                        >
-
+                    <div class="section-number">
+                        03
                     </div>
 
-                    <div class="result-info">
+                    <div>
 
-                        <h3 class="result-name">
-                            Zakat na mori︠e︡
-                        </h3>
+                        <p class="section-label">
+                            Field Test
+                        </p>
 
-                        <div class="offsets">
+                        <h2>
+                            Additional Images
+                        </h2>
 
-                            <span class="offset">
-                                L2 · G: (14, 46)
-                            </span>
-
-                            <span class="offset">
-                                NCC · G: (-88, -28)
-                            </span>
-
-                        </div>
+                        <p>
+                            Testing the alignment algorithm on three 
+                            additional Prokudin-Gorskii photographs.
+                        </p>
 
                     </div>
 
                 </div>
 
 
-                <!-- Own Image 02 -->
+                <div class="content">
 
-                <div class="result-card">
+                    <p class="lead">
+                        After establishing the multi-scale method, 
+                        I tested it on three additional images to 
+                        see how well the approach generalizes.
+                    </p>
 
-                    <div class="result-image">
 
-                        <img
-                            src="images/own/floodgates_ncc.jpg"
-                            alt="Additional image 2"
-                        >
+                    <div class="results-grid">
+
+                        <!-- Own Image 01 -->
+
+                        <div class="result-card">
+
+                            <div class="result-image">
+
+                                <img
+                                    src="images/own/zakat_na_morie_ncc.jpg"
+                                    alt="Zakat na mori︠e︡"
+                                >
+
+                            </div>
+
+                            <div class="result-info">
+
+                                <h3 class="result-name">
+                                    Zakat na mori︠e︡
+                                </h3>
+
+                                <div class="offsets">
+
+                                    <span class="offset">
+                                        L2 · G: (14, 46)
+                                    </span>
+
+                                    <span class="offset">
+                                        NCC · G: (-88, -28)
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Own Image 02 -->
+
+                        <div class="result-card">
+
+                            <div class="result-image">
+
+                                <img
+                                    src="images/own/floodgates_ncc.jpg"
+                                    alt="Additional image 2"
+                                >
+
+                            </div>
+
+                            <div class="result-info">
+
+                                <h3 class="result-name">
+                                    Floodgates
+                                </h3>
+
+                                <div class="offsets">
+
+                                    <span class="offset">
+                                        L2 · G: (21, 38)
+                                    </span>
+
+                                    <span class="offset">
+                                        NCC · G: (35, 76)
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- Own Image 03 -->
+
+                        <div class="result-card">
+
+                            <div class="result-image">
+
+                                <img
+                                    src="images/own/v_ital_ncc.jpg"
+                                    alt="Additional image 3"
+                                >
+
+                            </div>
+
+                            <div class="result-info">
+
+                                <h3 class="result-name">
+                                    V Italīi
+                                </h3>
+
+                                <div class="offsets">
+
+                                    <span class="offset">
+                                        L2 · G: (-11, 67)
+                                    </span>
+
+                                    <span class="offset">
+                                        NCC · G: (-28, 118)
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
 
                     </div>
 
-                    <div class="result-info">
 
-                        <h3 class="result-name">
-                            Floodgates
-                        </h3>
 
-                        <div class="offsets">
 
-                            <span class="offset">
-                                L2 · G: (21, 38)
-                            </span>
+                </div>
 
-                            <span class="offset">
-                                NCC · G: (35, 76)
-                            </span>
+            </div>
 
-                        </div>
+        </section>
+
+
+        <section id="improvement">
+
+            <div class="container">
+
+                <div class="section-heading">
+
+                    <div class="section-number">
+                        04
+                    </div>
+
+                    <div>
+
+                        <p class="section-label">
+                            Refinement
+                        </p>
+
+                        <h2>
+                            Improving Alignment
+                        </h2>
+
+                        <p>
+                            Moving beyond raw pixel matching to
+                            address difficult alignment cases.
+                        </p>
 
                     </div>
 
                 </div>
 
-                <!-- Own Image 03 -->
 
-                <div class="result-card">
+                <div class="content">
 
-                    <div class="result-image">
+                    <p class="lead">
+                        The baseline approach works well when the
+                        corresponding channels have similar intensity
+                        patterns, but some photographs violate this
+                        assumption, specifically Emir.
+                    </p>
 
-                        <img
-                            src="images/own/v_ital_ncc.jpg"
-                            alt="Additional image 3"
-                        >
 
-                    </div>
+                    <div class="callout">
 
-                    <div class="result-info">
+                        <strong>
+                            Difficult Case — Emir
+                        </strong>
 
-                        <h3 class="result-name">
-                            V Italīi
-                        </h3>
-
-                        <div class="offsets">
-
-                            <span class="offset">
-                                L2 · G: (-11, 67)
-                            </span>
-
-                            <span class="offset">
-                                NCC · G: (-28, 118)
-                            </span>
-
-                        </div>
+                        <p>
+                            Emir is difficult because the three exposures have 
+                            substantially different brightness/intensity 
+                            characteristics. His bright blue robe has different 
+                            brightness values in the red and blue exposure, 
+                            causing the great disparity in alignment we see 
+                            above.
+                        </p>
 
                     </div>
 
-                </div>
+
+                    <h3 class="section-label">
+                        Improved Feature / Distance Metric
+                    </h3>
 
 
-
-            </div>
-
-
-
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-<!-- =========================
-     IMPROVEMENT
-========================= -->
-
-<section id="improvement">
-
-    <div class="container">
-
-        <div class="section-heading">
-
-            <div class="section-number">
-                04
-            </div>
-
-            <div>
-
-                <p class="section-label">
-                    Refinement
-                </p>
-
-                <h2>
-                    Improving Alignment
-                </h2>
-
-                <p>
-                    Moving beyond raw pixel matching to
-                    address difficult alignment cases.
-                </p>
-
-            </div>
-
-        </div>
+                    <p>
+                        The original alignment algorithm uses NCC to compare 
+                        the raw pixel intensities of the different color channels. 
+                        However, this can be unreliable when the channels have 
+                        different brightness or exposure. To improve this, I used a
+                        gradient-based approach that first computes the gradient 
+                        magnitude of each channel using Sobel filters. This focuses 
+                        the alignment on structural features such as edges and object 
+                        boundaries, which are more consistent across the channels. 
+                        NCC is then applied to these gradient images to find the best 
+                        displacement. I also retained the image pyramid approach so 
+                        that large displacements can first be found at lower 
+                        resolutions and then refined at higher resolutions.
+                    </p>
 
 
-        <div class="content">
+                    <div class="code-wrapper">
 
-            <p class="lead">
-                The baseline approach works well when the
-                corresponding channels have similar intensity
-                patterns, but some photographs violate this
-                assumption, specifically Emir.
-            </p>
-
-
-            <div class="callout">
-
-                <strong>
-                    Difficult Case — Emir
-                </strong>
-
-                <p>
-                    Emir is difficult because the three exposures have 
-                    substantially different brightness/intensity 
-                    characteristics. His bright blue robe has different 
-                    brightness values in the red and blue exposure, 
-                    causing the great disparity in alignment we see 
-                    above.
-                </p>
-
-            </div>
-
-
-            <h3 class="section-label">
-                Improved Feature / Distance Metric
-            </h3>
-
-
-            <p>
-                The original alignment algorithm uses NCC to compare 
-                the raw pixel intensities of the different color channels. 
-                However, this can be unreliable when the channels have 
-                different brightness or exposure. To improve this, I used a
-                gradient-based approach that first computes the gradient 
-                magnitude of each channel using Sobel filters. This focuses 
-                the alignment on structural features such as edges and object 
-                boundaries, which are more consistent across the channels. 
-                NCC is then applied to these gradient images to find the best 
-                displacement. I also retained the image pyramid approach so 
-                that large displacements can first be found at lower 
-                resolutions and then refined at higher resolutions.
-            </p>
-
-
-            <div class="code-wrapper">
-
-                <span class="code-label">
-                    Improved Alignment
-                </span>
+                        <span class="code-label">
+                            Improved Alignment
+                        </span>
 
 <pre><code>
 def gradient_magnitude(im):
@@ -2030,107 +1880,92 @@ def gradient_align(base, moving, window=15):
     return best_offset
 </code></pre>
 
+                    </div>
+
+
+                    <!-- BEFORE / AFTER -->
+
+                    <div class="image-pair">
+
+                        <div class="image-item">
+
+                            <img
+                                src="images/multi/emir_ncc.jpg"
+                                alt="Before improvement"
+                            >
+
+                            <div class="image-caption">
+                                Before — Multi-Scale Method
+                            </div>
+
+                        </div>
+
+
+                        <div class="image-item">
+
+                            <img
+                                src="images/own/emir.jpg"
+                                alt="After improvement"
+                            >
+
+                            <div class="image-caption">
+                                After — Gradient Multi-Scale Method
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
 
+        </section>
 
-            <!-- BEFORE / AFTER -->
 
-            <div class="image-pair">
+        <section id="bells">
 
-                <div class="image-item">
+            <div class="container">
 
-                    <img
-                        src="images/multi/emir_ncc.jpg"
-                        alt="Before improvement"
-                    >
+                <div class="section-heading">
 
-                    <div class="image-caption">
-                        Before — Multi-Scale Method
+                    <div class="section-number">
+                        06
+                    </div>
+
+                    <div>
+
+                        <p class="section-label">
+                            Bonus Operations
+                        </p>
+
+                        <h2>
+                            Bells & Whistles
+                        </h2>
+
+                        <p>
+                            Additional experiments and improvements
+                            beyond the core alignment pipeline.
+                        </p>
+
                     </div>
 
                 </div>
 
 
-                <div class="image-item">
+                <div class="content">
 
-                    <img
-                        src="images/own/emir.jpg"
-                        alt="After improvement"
-                    >
-
-                    <div class="image-caption">
-                        After — Gradient Multi-Scale Method
-                    </div>
+                    <p class="lead">
+                    </p>
 
                 </div>
 
             </div>
 
-        </div>
+        </section>
 
-    </div>
-
-</section>
-
-
-<!-- =========================
-     BELLS & WHISTLES
-========================= -->
-
-<section id="bells">
-
-    <div class="container">
-
-        <div class="section-heading">
-
-            <div class="section-number">
-                06
-            </div>
-
-            <div>
-
-                <p class="section-label">
-                    Bonus Operations
-                </p>
-
-                <h2>
-                    Bells & Whistles
-                </h2>
-
-                <p>
-                    Additional experiments and improvements
-                    beyond the core alignment pipeline.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="content">
-
-            <p class="lead">
-            </p>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
-
-<footer>
-
-    <div class="container">
-
-        CS 180 · Fall 2026 · Xintian
-
-    </div>
-
-</footer>
-
+    </main>
+</div>
 
 </body>
 </html>
