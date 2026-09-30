@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project 2 — Fun with Filters and Frequencies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+<style>
+.results-grid.g1{display:grid;grid-template-columns:minmax(0,1fr);gap:20px}
+.results-grid.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.results-grid.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.results-grid.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.results-grid.g6{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+@media(max-width:800px){.results-grid.g3,.results-grid.g4,.results-grid.g6{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.content h3.sub{margin:44px 0 10px;font-family:'Rajdhani',sans-serif;letter-spacing:.04em}
+.todo{background:#ffd54a;color:#111;padding:0 5px;border-radius:3px;font-weight:600}
+.far-row{display:flex;gap:28px;align-items:flex-end;flex-wrap:wrap;margin:18px 0 6px}
+.far-row figure{margin:0;text-align:center}
+.far-row img{display:block;height:auto;border-radius:4px}
+.far-row figcaption{font-size:.8rem;opacity:.7;margin-top:6px}
+</style>
+</head>
+<body>
+<div class="page">
+
+<aside class="sidebar">
+  <a class="back" href="../index.html">← Back to Portfolio</a>
+  <div class="sidebar-label">Projects</div>
+  <nav>
+    <a href="../0/index.html">00 · Camera</a>
+    <a href="../1/index.html">01 · Prokudin-Gorskii</a>
+    <a class="active" href="index.html">02 · Filters &amp; Frequencies</a>
+    <span class="disabled">03 · Diffusion Models</span>
+    <span class="disabled">04 · (Auto)stitching &amp; Mosaics</span>
+    <span class="disabled">05 · Final Project</span>
+  </nav>
+</aside>
+
+<main>
+<header class="top-nav">
+  <div class="nav-inner">
+    <a class="back" href="#top">Filters &amp; Frequencies</a>
+    <div class="nav-links">
+      <a href="#p11">1.1</a><a href="#p12">1.2</a><a href="#p13">1.3</a><a href="#p21">2.1</a><a href="#p22">2.2</a><a href="#p23">2.3</a><a href="#p24">2.4</a><a href="#learned">Learned</a>
+    </div>
+  </div>
+</header>
+
+<div class="hero" id="top">
+  <div class="container hero-content">
+    <p class="eyebrow">CS 180 · Project 02</p>
+    <h1>Fun with Filters &amp; Frequencies</h1>
+    <p class="hero-subtitle">Convolutions from scratch, edges from derivative-of-Gaussian filters, unsharp masking, hybrid images, and multiresolution blending.</p>
+    <div class="hero-meta">
+      <span class="meta active">Part 1 · Filters</span><span class="meta active">Part 2 · Frequencies</span>
+      <span class="meta">Convolution</span><span class="meta">Edges</span><span class="meta">Hybrid Images</span><span class="meta">Laplacian Stacks</span>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 1.1 ================= -->
+<section id="p11"><div class="container">
+  <div class="section-heading"><div class="section-number">1.1</div><div>
+    <p class="section-label">Part One</p><h2>Convolutions from Scratch</h2>
+    <p>Four loops, two loops, and a comparison against SciPy.</p></div></div>
+  <div class="content">
+    <p class="lead">I implemented 2D convolution with NumPy only: flip the kernel, zero-pad the image (<code>"same"</code> or <code>"full"</code>), then slide over the padded image.</p>
+    <div class="method-grid">
+      <div class="method-card"><h3>Four Loops</h3><p>Visits every output pixel and every kernel entry explicitly, accumulating one product at a time.</p></div>
+      <div class="method-card"><h3>Two Loops</h3><p>Visits every output pixel, but replaces the inner two loops with one elementwise product and sum over the patch.</p></div>
+    </div>
+    <div class="code-wrapper"><span class="code-label">Padding + Convolution</span>
+<pre>def pad_zero(image, kernel, mode="same"):
+    kh, kw = kernel.shape
+    ph, pw = (kh // 2, kw // 2) if mode == "same" else (kh - 1, kw - 1)
+    return np.pad(image, ((ph, ph), (pw, pw)), mode='constant', constant_values=0)
+
+def conv2d_4loops(image, kernel, mode="same"):
+    kernel = kernel[::-1, ::-1]                       
+    kh, kw = kernel.shape
+    padded = pad_zero(image, kernel, mode)
+    H_out, W_out = padded.shape[0] - kh + 1, padded.shape[1] - kw + 1
+    out = np.zeros((H_out, W_out))
+    for i in range(H_out):
+        for j in range(W_out):
+            acc = 0.0
+            for u in range(kh):
+                for v in range(kw):
+                    acc += padded[i + u, j + v] * kernel[u, v]
+            out[i, j] = acc
+    return out
+
+def conv2d_2loops(image, kernel, mode="same"):
+    kernel = kernel[::-1, ::-1]
+    kh, kw = kernel.shape
+    padded = pad_zero(image, kernel, mode)
+    H_out, W_out = padded.shape[0] - kh + 1, padded.shape[1] - kw + 1
+    out = np.zeros((H_out, W_out))
+    for i in range(H_out):
+        for j in range(W_out):
+            out[i, j] = np.sum(padded[i:i + kh, j:j + kw] * kernel)
+    return out
+
+Dx = np.array([[1, 0, -1]]);  Dy = Dx.T;  box = np.full((9, 9), 1/81)</pre></div>
+
+    <p>Filters applied to my selfie (read as grayscale): a 9×9 box filter (all entries 1/81), <code>Dx = [1, 0, -1]</code>, and <code>Dy = Dxᵀ</code>.</p>
+    <div class="results-grid g4">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="images/selfie.jpg" alt="Original" loading="lazy"></div><div class="result-info"><p class="result-name">Original</p><div class="offsets"><span class="offset">read as grayscale</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/selfie_box.png" alt="Box 9×9" loading="lazy"></div><div class="result-info"><p class="result-name">Box 9×9</p><div class="offsets"><span class="offset">blur</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/selfie_dx.png" alt="Dx" loading="lazy"></div><div class="result-info"><p class="result-name">Dx</p><div class="offsets"><span class="offset">vertical edges</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/selfie_dy.png" alt="Dy" loading="lazy"></div><div class="result-info"><p class="result-name">Dy</p><div class="offsets"><span class="offset">horizontal edges</span></div></div></div>
+</div>
+
+    <div class="table-wrapper"><table>
+      <tr><th>Method</th><th>Runtime · 9×9 box, 1280 × 1099</th></tr>
+      <tr><td>4 loops</td><td>24.73 s</td></tr>
+      <tr><td>2 loops</td><td>3.50 s</td></tr>
+      <tr><td>scipy.signal.convolve2d</td><td>0.12 s</td></tr>
+    </table></div>
+
+    <div class="callout"><strong>Runtime &amp; boundaries</strong>
+      <p>The 4-loop version is slowest because every multiply-add runs in interpreted Python. The 2-loop version pushes the kernel arithmetic into vectorized NumPy (about 7× faster), and SciPy is faster still (about 200× vs. 4 loops) because its loops are compiled. All three zero-fill the boundary (<code>boundary='fill', fillvalue=0</code> in SciPy), so pixels near the border mix in the implicit black frame and get darkened after blurring. Max absolute difference vs. SciPy: 7.771561172376096e-16.</p></div>
+  </div>
+</div></section>
+
+<!-- ================= 1.2 ================= -->
+<section id="p12"><div class="container">
+  <div class="section-heading"><div class="section-number">1.2</div><div>
+    <p class="section-label">Part One</p><h2>Finite Difference Operator</h2>
+    <p>Partial derivatives, gradient magnitude, and a binarized edge map.</p></div></div>
+  <div class="content">
+    <p>I convolved the cameraman with Dx and Dy (<code>scipy.signal.convolve2d</code>). Dx responds to vertical edges, Dy to horizontal ones, and the gradient magnitude is <code>√(Dx² + Dy²)</code>.</p>
+    <div class="results-grid g3">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_dx.png" alt="Dx" loading="lazy"></div><div class="result-info"><p class="result-name">Dx</p><div class="offsets"><span class="offset">∂I/∂x</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_dy.png" alt="Dy" loading="lazy"></div><div class="result-info"><p class="result-name">Dy</p><div class="offsets"><span class="offset">∂I/∂y</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_gradmag.png" alt="Magnitude" loading="lazy"></div><div class="result-info"><p class="result-name">Magnitude</p><div class="offsets"><span class="offset">√(Dx²+Dy²)</span></div></div></div>
+</div>
+    <p style="margin-top:40px">To binarize, I swept thresholds coarsely, then more finely between 0.2 and 0.3.</p>
+    <div class="results-grid g4">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_edges_0.1.png" alt="t = 0.1" loading="lazy"></div><div class="result-info"><p class="result-name">t = 0.1</p><div class="offsets"><span class="offset">noisy</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_edges_0.2.png" alt="t = 0.2" loading="lazy"></div><div class="result-info"><p class="result-name">t = 0.2</p><div class="offsets"><span class="offset">some noise</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_edges_0.3.png" alt="t = 0.3" loading="lazy"></div><div class="result-info"><p class="result-name">t = 0.3</p><div class="offsets"><span class="offset">thinning</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_edges_0.4.png" alt="t = 0.4" loading="lazy"></div><div class="result-info"><p class="result-name">t = 0.4</p><div class="offsets"><span class="offset">edges lost</span></div></div></div>
+</div>
+    <div class="results-grid g4">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_edges_0.22.png" alt="t = 0.22" loading="lazy"></div><div class="result-info"><p class="result-name">t = 0.22</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_edges_0.24.png" alt="t = 0.24" loading="lazy"></div><div class="result-info"><p class="result-name">t = 0.24</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_edges_0.26.png" alt="t = 0.26" loading="lazy"></div><div class="result-info"><p class="result-name">t = 0.26</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_edges_0.28.png" alt="t = 0.28" loading="lazy"></div><div class="result-info"><p class="result-name">t = 0.28</p></div></div>
+</div>
+    <div class="callout"><strong>Chosen threshold · 0.26</strong>
+      <p>Below it, grass and background texture still register as edges; above it, weaker real contours (tripod legs, buildings) start to break up. I favored a clean silhouette over catching every faint edge. The bright frame along the border comes from zero padding.</p></div>
+  </div>
+</div></section>
+
+<!-- ================= 1.3 ================= -->
+<section id="p13"><div class="container">
+  <div class="section-heading"><div class="section-number">1.3</div><div>
+    <p class="section-label">Part One</p><h2>Derivative of Gaussian</h2>
+    <p>Smooth first, then differentiate, in two convolutions or one.</p></div></div>
+  <div class="content">
+    <p>Finite-difference edges are noisy, so I blurred with a 9×9 Gaussian (σ = 2, from <code>cv2.getGaussianKernel</code> and an outer product) before differentiating.</p>
+    <div class="results-grid g4">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_blurred.png" alt="Blurred" loading="lazy"></div><div class="result-info"><p class="result-name">Blurred</p><div class="offsets"><span class="offset">σ = 2</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_blur_dx.png" alt="Blurred Dx" loading="lazy"></div><div class="result-info"><p class="result-name">Blurred Dx</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_blur_dy.png" alt="Blurred Dy" loading="lazy"></div><div class="result-info"><p class="result-name">Blurred Dy</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_blur_gradmag.png" alt="Magnitude" loading="lazy"></div><div class="result-info"><p class="result-name">Magnitude</p><div class="offsets"><span class="offset">blur → derivative</span></div></div></div>
+</div>
+    <div class="results-grid g4">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_blur_edges_0.12.png" alt="t = 0.12" loading="lazy"></div><div class="result-info"><p class="result-name">t = 0.12</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_blur_edges_0.14.png" alt="t = 0.14" loading="lazy"></div><div class="result-info"><p class="result-name">t = 0.14</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_blur_edges_0.16.png" alt="t = 0.16" loading="lazy"></div><div class="result-info"><p class="result-name">t = 0.16</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_blur_edges_0.18.png" alt="t = 0.18" loading="lazy"></div><div class="result-info"><p class="result-name">t = 0.18</p></div></div>
+</div>
+    <p style="margin-top:30px">Side by side: finite difference only, vs. blur then difference.</p>
+    <div class="results-grid g2">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_gradmag.png" alt="Finite difference" loading="lazy"></div><div class="result-info"><p class="result-name">Finite difference</p><div class="offsets"><span class="offset">no smoothing</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_blur_gradmag.png" alt="Gaussian, then difference" loading="lazy"></div><div class="result-info"><p class="result-name">Gaussian, then difference</p><div class="offsets"><span class="offset">σ = 2</span></div></div></div>
+</div>
+    <div class="callout"><strong>What changed?</strong>
+      <p>Edges are thicker and more continuous, the grass speckle is largely suppressed, and a much lower threshold (0.14 vs. 0.26 before) now gives a clean edge map. The cost is wider, slightly softer edges, since the Gaussian spreads each edge over several pixels.</p></div>
+
+    <h3 class="sub">Derivative of Gaussian filters</h3>
+    <p>By associativity, <code>Dx ∗ (G ∗ I) = (Dx ∗ G) ∗ I</code>, so I convolved G with Dx and Dy once (<code>mode='full'</code>, giving 9×11 and 11×9 filters) and applied them directly to the original image.</p>
+    <div class="code-wrapper"><span class="code-label">DoG Filters + Verification</span>
+<pre>def gaussian_kernel(ksize, sigma):
+    g1d = cv2.getGaussianKernel(ksize, sigma)
+    return g1d @ g1d.T
+
+gaussian = gaussian_kernel(9, 2)
+DoG_dx = signal.convolve2d(gaussian, Dx, mode='full')
+DoG_dy = signal.convolve2d(gaussian, Dy, mode='full')
+cam_dog_dx = signal.convolve2d(cameraman, DoG_dx, mode='same', boundary='fill', fillvalue=0)
+cam_dog_dy = signal.convolve2d(cameraman, DoG_dy, mode='same', boundary='fill', fillvalue=0)
+gradient_dog = np.sqrt(cam_dog_dx**2 + cam_dog_dy**2)
+
+margin = 10  # borders differ: the two-step route zero-pads twice
+a = blur_grad_mag[margin:-margin, margin:-margin]
+b = gradient_dog[margin:-margin, margin:-margin]
+print(np.allclose(a, b, atol=1e-6))                # True
+print("Max interior error:", np.max(np.abs(a - b)))  # 7.47e-16</pre></div>
+    <div class="results-grid g2">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/dog_dx.png" alt="DoG Dx" loading="lazy"></div><div class="result-info"><p class="result-name">DoG Dx</p><div class="offsets"><span class="offset">Dx∗G</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/dog_dy.png" alt="DoG Dy" loading="lazy"></div><div class="result-info"><p class="result-name">DoG Dy</p><div class="offsets"><span class="offset">Dy∗G</span></div></div></div>
+</div>
+    <div class="results-grid g3">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_dog_dx.png" alt="Via DoG Dx" loading="lazy"></div><div class="result-info"><p class="result-name">Via DoG Dx</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/cam_dog_dy.png" alt="Via DoG Dy" loading="lazy"></div><div class="result-info"><p class="result-name">Via DoG Dy</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/gradient_dog.png" alt="DoG magnitude" loading="lazy"></div><div class="result-info"><p class="result-name">DoG magnitude</p><div class="offsets"><span class="offset">matches blur → derivative</span></div></div></div>
+</div>
+    <p style="margin-top:30px">The two routes agree to floating-point precision (max interior error 7.5 × 10⁻¹⁶); only the borders differ, because the two-step route zero-pads twice. The single-filter route is also cheaper: one convolution per direction instead of two.</p>
+  </div>
+</div></section>
+
+<!-- ================= 2.1 ================= -->
+<section id="p21"><div class="container">
+  <div class="section-heading"><div class="section-number">2.1</div><div>
+    <p class="section-label">Part Two</p><h2>Image Sharpening</h2>
+    <p>Unsharp masking: add back the high frequencies.</p></div></div>
+  <div class="content">
+    <p>A Gaussian <code>G</code> is a low-pass filter, so <code>I − G∗I</code> keeps only the high frequencies (edges, texture). Images look sharper with stronger high frequencies, so:</p>
+    <p style="text-align:center"><code>I_sharp = I + α(I − G∗I) = ((1 + α)·δ − α·G) ∗ I</code></p>
+    <p>where δ is the impulse (identity) filter. The right-hand form is the single <em>unsharp mask filter</em>: one convolution with kernel <code>(1+α)δ − αG</code>. I convolve each RGB channel separately (9×9 kernel, σ = 2) and clip to [0, 1].</p>
+    <div class="code-wrapper"><span class="code-label">Unsharp mask</span>
+<pre>def unsharp_mask(img, ksize=9, sigma=2, alpha=1.0):
+    blurred = convolve2d_color(img, gaussian_kernel(ksize, sigma))
+    high_freq = img - blurred
+    return np.clip(img + alpha * high_freq, 0, 1), blurred, high_freq
+
+def unsharp_kernel(ksize, sigma, alpha):     
+    G = gaussian_kernel(ksize, sigma)
+    d = np.zeros_like(G); d[ksize // 2, ksize // 2] = 1
+    return (1 + alpha) * d - alpha * G</pre></div>
+
+    <h3 class="sub">Taj Mahal</h3>
+    <div class="results-grid g3">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/taj_orig.png" alt="Original" loading="lazy"></div><div class="result-info"><p class="result-name">Original</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/taj_blur.png" alt="Blurred" loading="lazy"></div><div class="result-info"><p class="result-name">Blurred</p><div class="offsets"><span class="offset">low frequencies</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/taj_high.png" alt="High frequencies" loading="lazy"></div><div class="result-info"><p class="result-name">High frequencies</p><div class="offsets"><span class="offset">I − G∗I, shifted +0.5</span></div></div></div>
+</div>
+    <div class="results-grid g3">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/taj_sharp_a0.5.png" alt="α = 0.5" loading="lazy"></div><div class="result-info"><p class="result-name">α = 0.5</p><div class="offsets"><span class="offset">subtle</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/taj_sharp_a1.0.png" alt="α = 1.0" loading="lazy"></div><div class="result-info"><p class="result-name">α = 1.0</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/taj_sharp_a2.0.png" alt="α = 2.0" loading="lazy"></div><div class="result-info"><p class="result-name">α = 2.0</p><div class="offsets"><span class="offset">strong</span></div></div></div>
+</div>
+    <h3 class="sub">Flowers</h3>
+    <div class="results-grid g3">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/blur_flowers.png" alt="Original" loading="lazy"></div><div class="result-info"><p class="result-name">Original</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/flowers_blur.png" alt="Blurred" loading="lazy"></div><div class="result-info"><p class="result-name">Blurred</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/high_flowers.png" alt="High frequencies" loading="lazy"></div><div class="result-info"><p class="result-name">High frequencies</p><div class="offsets"><span class="offset">shifted +0.5</span></div></div></div>
+</div>
+    <div class="results-grid g3">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/flowers_sharp_a0.5.png" alt="α = 0.5" loading="lazy"></div><div class="result-info"><p class="result-name">α = 0.5</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/flowers_sharp_a1.0.png" alt="α = 1.0" loading="lazy"></div><div class="result-info"><p class="result-name">α = 1.0</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/flowers_sharp_a2.0.png" alt="α = 2.0" loading="lazy"></div><div class="result-info"><p class="result-name">α = 2.0</p></div></div>
+</div>
+    <div class="callout"><strong>Effect of α</strong>
+      <p>α scales how much edge contrast is added. Small α gives a mild crispening; large α exaggerates edges, and bright/dark halos appear along strong contours, along with amplified noise and texture. Values are clipped to [0, 1], so very high α also saturates highlights and shadows.</p></div>
+
+    <h3 class="sub">Blur a sharp image, then re-sharpen</h3>
+    <p>I took a sharp photo, blurred it with the same Gaussian, and applied the unsharp mask.</p>
+    <div class="results-grid g3">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/resharp_orig.png" alt="Original sharp" loading="lazy"></div><div class="result-info"><p class="result-name">Original sharp</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/resharp_blurred.png" alt="Blurred" loading="lazy"></div><div class="result-info"><p class="result-name">Blurred</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/resharp_result.png" alt="Re-sharpened" loading="lazy"></div><div class="result-info"><p class="result-name">Re-sharpened</p><div class="offsets"><span class="offset">α = 1.0</span></div></div></div>
+</div>
+    <div class="results-grid g3">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/resharp_sharp_a0.5.png" alt="α = 0.5" loading="lazy"></div><div class="result-info"><p class="result-name">α = 0.5</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/resharp_sharp_a2.0.png" alt="α = 2.0" loading="lazy"></div><div class="result-info"><p class="result-name">α = 2.0</p></div></div>
+</div>
+    <div class="callout"><strong>Observations</strong>
+      <p>The re-sharpened image looks crisper than the blurred one, but it does not match the original. Blurring destroys the highest frequencies (the Gaussian's response is near zero there), and unsharp masking can only boost frequencies that survive; it cannot recreate lost detail. What it adds is edge contrast, so fine texture stays smooth while edges get halos. </p></div>
+  </div>
+</div></section>
+
+<!-- ================= 2.2 ================= -->
+<section id="p22"><div class="container">
+  <div class="section-heading"><div class="section-number">2.2</div><div>
+    <p class="section-label">Part Two</p><h2>Hybrid Images</h2>
+    <p>Low frequencies from one image, high frequencies from another.</p></div></div>
+  <div class="content">
+    <div class="code-wrapper"><span class="code-label">Hybrid image</span>
+<pre>def low_pass(img, sigma, ksize=None):
+    if ksize is None: ksize = int(6 * sigma + 1) | 1     # odd
+    k = gaussian_kernel(ksize, sigma)
+    return convolve2d_color(img, k) if img.ndim == 3 else signal.convolve2d(img, k, mode='same')
+
+def high_pass(img, sigma): return img - low_pass(img, sigma)
+
+def hybrid_image(im_high_src, im_low_src, sigma_high, sigma_low):
+    high, low = high_pass(im_high_src, sigma_high), low_pass(im_low_src, sigma_low)
+    return np.clip(low + high, 0, 1), low, high</pre></div>
+
+    <div class="table-wrapper"><table>
+      <tr><th>Hybrid</th><th>High-pass source (σ · cutoff)</th><th>Low-pass source (σ · cutoff)</th></tr>
+      <tr><td>Derek + Nutmeg</td><td>Nutmeg · 8 · 0.020 cyc/px</td><td>Derek · 5 · 0.032 cyc/px</td></tr>
+      <tr><td>Jing + Raze</td><td>Raze · 8 · 0.020 cyc/px</td><td>Jing · 4 · 0.040 cyc/px</td></tr>
+      <tr><td>Smth + Jett</td><td>Smth · 10 · 0.016 cyc/px</td><td>Jett · 5 · 0.032 cyc/px</td></tr>
+    </table></div>
+
+    <h3 class="sub">Favorite: Jing + Raze (full process)</h3>
+    <p>Inputs, and the same pair after alignment:</p>
+    <div class="results-grid g4">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="images/jing.jpg" alt="Jing" loading="lazy"></div><div class="result-info"><p class="result-name">Jing</p><div class="offsets"><span class="offset">input (low-pass)</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="images/raze.jpg" alt="Raze" loading="lazy"></div><div class="result-info"><p class="result-name">Raze</p><div class="offsets"><span class="offset">input (high-pass)</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/jing_aligned.png" alt="Jing aligned" loading="lazy"></div><div class="result-info"><p class="result-name">Jing aligned</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/raze_aligned.png" alt="Raze aligned" loading="lazy"></div><div class="result-info"><p class="result-name">Raze aligned</p></div></div>
+</div>
+    <p style="margin-top:20px">Cutoff choice: I swept σ<sub>high</sub> ∈ {3, 5, 7} against σ<sub>low</sub> ∈ {6, 10, 14}, then settled on σ<sub>high</sub> = 8 and σ<sub>low</sub> = 4 for the final after guestimating from the sweep that this would yield the best close and far views. </p>
+    <div class="results-grid g1">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/sweep_jing_raze.png" alt="σ sweep" loading="lazy"></div><div class="result-info"><p class="result-name">σ sweep</p><div class="offsets"><span class="offset">rows: σ_high, columns: σ_low</span></div></div></div>
+</div>
+    <p style="margin-top:20px">Filtered components and the final hybrid:</p>
+    <div class="results-grid g3">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/low_jing.png" alt="Low-pass Jing" loading="lazy"></div><div class="result-info"><p class="result-name">Low-pass Jing</p><div class="offsets"><span class="offset">σ = 4</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/high_raze.png" alt="High-pass Raze" loading="lazy"></div><div class="result-info"><p class="result-name">High-pass Raze</p><div class="offsets"><span class="offset">σ = 8, shifted +0.5</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/hybrid_jing_raze.png" alt="Hybrid" loading="lazy"></div><div class="result-info"><p class="result-name">Hybrid</p><div class="offsets"><span class="offset">low + high</span></div></div></div>
+</div>
+<p style="margin-top:20px">Zoomed out (what it looks like from far away):</p>
+<div class="far-row">
+  <figure><img src="results/hybrid_jing_raze.png" width="200" alt="Hybrid, small"><figcaption>200 px</figcaption></figure>
+  <figure><img src="results/hybrid_jing_raze.png" width="120" alt="Hybrid, smaller"><figcaption>120 px</figcaption></figure>
+  <figure><img src="results/hybrid_jing_raze.png" width="60" alt="Hybrid, tiny"><figcaption>60 px</figcaption></figure>
+</div>
+    <p style="margin-top:20px">Log magnitude of the Fourier transform (center = low frequencies):</p>
+    <div class="results-grid g6">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/fft_jing.png" alt="Jing" loading="lazy"></div><div class="result-info"><p class="result-name">Jing</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/fft_raze.png" alt="Raze" loading="lazy"></div><div class="result-info"><p class="result-name">Raze</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/fft_low.png" alt="Low-passed" loading="lazy"></div><div class="result-info"><p class="result-name">Low-passed</p><div class="offsets"><span class="offset">energy near center only</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/fft_high.png" alt="High-passed" loading="lazy"></div><div class="result-info"><p class="result-name">High-passed</p><div class="offsets"><span class="offset">center removed</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/fft_hybrid.png" alt="Hybrid" loading="lazy"></div><div class="result-info"><p class="result-name">Hybrid</p><div class="offsets"><span class="offset">both</span></div></div></div>
+</div>
+    <p style="margin-top:20px">The low-passed spectrum is a bright blob at the center; the high-passed spectrum has the center suppressed and keeps the outer ring; the hybrid contains both.</p>
+
+    <h3 class="sub">Derek + Nutmeg</h3>
+    <div class="results-grid g3">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="images/DerekPicture.jpg" alt="Derek" loading="lazy"></div><div class="result-info"><p class="result-name">Derek</p><div class="offsets"><span class="offset">low-pass</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="images/nutmeg.jpg" alt="Nutmeg" loading="lazy"></div><div class="result-info"><p class="result-name">Nutmeg</p><div class="offsets"><span class="offset">high-pass</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/hybrid_derek_nutmeg.png" alt="Hybrid" loading="lazy"></div><div class="result-info"><p class="result-name">Hybrid</p></div></div>
+</div>
+<div class="far-row">
+  <figure><img src="results/hybrid_derek_nutmeg.png" width="200" alt="Hybrid, small"><figcaption>200 px</figcaption></figure>
+  <figure><img src="results/hybrid_derek_nutmeg.png" width="120" alt="Hybrid, smaller"><figcaption>120 px</figcaption></figure>
+  <figure><img src="results/hybrid_derek_nutmeg.png" width="60" alt="Hybrid, tiny"><figcaption>60 px</figcaption></figure>
+</div>
+
+    <h3 class="sub">Smth + Jett</h3>
+    <div class="results-grid g3">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="images/smth.jpg" alt="Smth" loading="lazy"></div><div class="result-info"><p class="result-name">Smth</p><div class="offsets"><span class="offset">high-pass</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="images/jett.jpg" alt="Jett" loading="lazy"></div><div class="result-info"><p class="result-name">Jett</p><div class="offsets"><span class="offset">low-pass</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/hybrid_smth_jett.png" alt="Hybrid" loading="lazy"></div><div class="result-info"><p class="result-name">Hybrid</p></div></div>
+</div>
+  </div>
+  <div class="far-row">
+  <figure><img src="results/hybrid_smth_jett.png" width="200" alt="Hybrid, small"><figcaption>200 px</figcaption></figure>
+  <figure><img src="results/hybrid_smth_jett.png" width="120" alt="Hybrid, smaller"><figcaption>120 px</figcaption></figure>
+  <figure><img src="results/hybrid_smth_jett.png" width="60" alt="Hybrid, tiny"><figcaption>60 px</figcaption></figure>
+</div>
+</div></section>
+
+<!-- ================= 2.3 ================= -->
+<section id="p23"><div class="container">
+  <div class="section-heading"><div class="section-number">2.3</div><div>
+    <p class="section-label">Part Two</p><h2>Gaussian &amp; Laplacian Stacks</h2>
+    <p>Like pyramids, but never downsampled.</p></div></div>
+  <div class="content">
+    <p>Each Gaussian stack level blurs the previous one with the same σ = 2 kernel (no subsampling, so every level keeps the original size). Laplacian level <em>i</em> is <code>G<sub>i</sub> − G<sub>i+1</sub></code> (a band-pass), and the last level is the final Gaussian, so summing all Laplacian levels reconstructs the image exactly.</p>
+    <div class="code-wrapper"><span class="code-label">Stacks</span>
+<pre>def gaussian_stack(img, levels, sigma=2, ksize=None):
+    if ksize is None: ksize = int(6 * sigma + 1) | 1
+    kernel = gaussian_kernel(ksize, sigma)
+    stack = [img]
+    for _ in range(1, levels):
+        prev = stack[-1]
+        stack.append(convolve2d_color(prev, kernel) if img.ndim == 3 else
+                     signal.convolve2d(prev, kernel, mode='same', boundary='fill', fillvalue=0))
+    return stack
+
+def laplacian_stack(g):
+    return [g[i] - g[i + 1] for i in range(len(g) - 1)] + [g[-1]]</pre></div>
+    <h3 class="sub">Apple (6 levels, σ = 2)</h3>
+    <div class="results-grid g6">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/g_apple_0.png" alt="Gaussian 0" loading="lazy"></div><div class="result-info"><p class="result-name">Gaussian 0</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/g_apple_1.png" alt="Gaussian 1" loading="lazy"></div><div class="result-info"><p class="result-name">Gaussian 1</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/g_apple_2.png" alt="Gaussian 2" loading="lazy"></div><div class="result-info"><p class="result-name">Gaussian 2</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/g_apple_3.png" alt="Gaussian 3" loading="lazy"></div><div class="result-info"><p class="result-name">Gaussian 3</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/g_apple_4.png" alt="Gaussian 4" loading="lazy"></div><div class="result-info"><p class="result-name">Gaussian 4</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/g_apple_5.png" alt="Gaussian 5" loading="lazy"></div><div class="result-info"><p class="result-name">Gaussian 5</p></div></div>
+</div>
+    <div class="results-grid g6">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/l_apple_0.png" alt="Laplacian 0" loading="lazy"></div><div class="result-info"><p class="result-name">Laplacian 0</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/l_apple_1.png" alt="Laplacian 1" loading="lazy"></div><div class="result-info"><p class="result-name">Laplacian 1</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/l_apple_2.png" alt="Laplacian 2" loading="lazy"></div><div class="result-info"><p class="result-name">Laplacian 2</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/l_apple_3.png" alt="Laplacian 3" loading="lazy"></div><div class="result-info"><p class="result-name">Laplacian 3</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/l_apple_4.png" alt="Laplacian 4" loading="lazy"></div><div class="result-info"><p class="result-name">Laplacian 4</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/l_apple_5.png" alt="Laplacian 5" loading="lazy"></div><div class="result-info"><p class="result-name">Laplacian 5</p></div></div>
+</div>
+    <h3 class="sub">Orange (6 levels, σ = 2)</h3>
+    <div class="results-grid g6">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/g_orange_0.png" alt="Gaussian 0" loading="lazy"></div><div class="result-info"><p class="result-name">Gaussian 0</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/g_orange_1.png" alt="Gaussian 1" loading="lazy"></div><div class="result-info"><p class="result-name">Gaussian 1</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/g_orange_2.png" alt="Gaussian 2" loading="lazy"></div><div class="result-info"><p class="result-name">Gaussian 2</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/g_orange_3.png" alt="Gaussian 3" loading="lazy"></div><div class="result-info"><p class="result-name">Gaussian 3</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/g_orange_4.png" alt="Gaussian 4" loading="lazy"></div><div class="result-info"><p class="result-name">Gaussian 4</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/g_orange_5.png" alt="Gaussian 5" loading="lazy"></div><div class="result-info"><p class="result-name">Gaussian 5</p></div></div>
+</div>
+    <div class="results-grid g6">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/l_orange_0.png" alt="Laplacian 0" loading="lazy"></div><div class="result-info"><p class="result-name">Laplacian 0</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/l_orange_1.png" alt="Laplacian 1" loading="lazy"></div><div class="result-info"><p class="result-name">Laplacian 1</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/l_orange_2.png" alt="Laplacian 2" loading="lazy"></div><div class="result-info"><p class="result-name">Laplacian 2</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/l_orange_3.png" alt="Laplacian 3" loading="lazy"></div><div class="result-info"><p class="result-name">Laplacian 3</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/l_orange_4.png" alt="Laplacian 4" loading="lazy"></div><div class="result-info"><p class="result-name">Laplacian 4</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/l_orange_5.png" alt="Laplacian 5" loading="lazy"></div><div class="result-info"><p class="result-name">Laplacian 5</p></div></div>
+</div>
+    <p style="margin-top:20px">Laplacian levels are shifted by +0.5 for display; level 0 holds the finest detail and the last level is the low-pass residual.</p>
+  </div>
+</div></section>
+
+<!-- ================= 2.4 ================= -->
+<section id="p24"><div class="container">
+  <div class="section-heading"><div class="section-number">2.4</div><div>
+    <p class="section-label">Part Two</p><h2>Multiresolution Blending</h2>
+    <p>Blend each frequency band with its own mask blur.</p></div></div>
+  <div class="content">
+    <p>For inputs A, B and a mask M: build Laplacian stacks of A and B and a <em>Gaussian</em> stack of M, blend each level as <code>M<sub>i</sub>·L<sub>A,i</sub> + (1 − M<sub>i</sub>)·L<sub>B,i</sub></code>, and sum the levels. Since the mask blur grows with level, low frequencies blend across a wide seam and high frequencies across a narrow one. I used 5 levels and σ = 10, in color.</p>
+    <div class="code-wrapper"><span class="code-label">Blend</span>
+<pre>def blend(im1, im2, mask, levels=5, sigma=2):
+    l1 = laplacian_stack(gaussian_stack(im1, levels, sigma))
+    l2 = laplacian_stack(gaussian_stack(im2, levels, sigma))
+    gm = gaussian_stack(mask, levels, sigma)
+    out = []
+    for i in range(levels):
+        m = gm[i][:, :, None] if im1.ndim == 3 and gm[i].ndim == 2 else gm[i]
+        out.append(m * l1[i] + (1 - m) * l2[i])
+    return np.clip(np.sum(out, axis=0), 0, 1), out, gm, l1, l2</pre></div>
+
+    <h3 class="sub">Oraple</h3>
+    <p>Vertical seam: the mask is a step function (left half = 1).</p>
+    <div class="results-grid g3">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="images/apple.jpeg" alt="Apple" loading="lazy"></div><div class="result-info"><p class="result-name">Apple</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="images/orange.jpeg" alt="Orange" loading="lazy"></div><div class="result-info"><p class="result-name">Orange</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/oraple.png" alt="Oraple" loading="lazy"></div><div class="result-info"><p class="result-name">Oraple</p></div></div>
+</div>
+    <p style="margin-top:20px">Recreating Szeliski Fig. 3.42 (a–l): rows are Laplacian levels 0, 2, 4 for the masked apple, masked orange, and their sum; the bottom row is the total of all levels for each column.</p>
+    <div class="results-grid g1">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/fig342_oraple.png" alt="Figure 3.42 recreation" loading="lazy"></div><div class="result-info"><p class="result-name">Figure 3.42 recreation</p><div class="offsets"><span class="offset">Oraple</span></div></div></div>
+</div>
+
+    <h3 class="sub">Ronation (rose + carnation, vertical seam)</h3>
+    <div class="results-grid g3">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="images/rose.jpg" alt="Rose" loading="lazy"></div><div class="result-info"><p class="result-name">Rose</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="images/carnation.jpg" alt="Carnation" loading="lazy"></div><div class="result-info"><p class="result-name">Carnation</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/ronation.png" alt="Ronation" loading="lazy"></div><div class="result-info"><p class="result-name">Ronation</p></div></div>
+</div>
+
+    <h3 class="sub">PRX Sage (irregular mask)</h3>
+    <div class="results-grid g4">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="images/jersey.jpg" alt="Jersey" loading="lazy"></div><div class="result-info"><p class="result-name">Jersey</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="images/sage.jpg" alt="Sage" loading="lazy"></div><div class="result-info"><p class="result-name">Sage</p></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="images/sage_mask.png" alt="Mask" loading="lazy"></div><div class="result-info"><p class="result-name">Mask</p><div class="offsets"><span class="offset">irregular, binarized at 0.5</span></div></div></div>
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/prx_sage.png" alt="PRX Sage" loading="lazy"></div><div class="result-info"><p class="result-name">PRX Sage</p><div class="offsets"><span class="offset">jersey where mask = 1</span></div></div></div>
+</div>
+    <div class="results-grid g1">
+<div class="result-card"><div class="result-image"><img class="zoomable" src="results/fig342_prx.png" alt="Laplacian stack process" loading="lazy"></div><div class="result-info"><p class="result-name">Laplacian stack process</p><div class="offsets"><span class="offset">masked inputs and blend, same layout as Fig. 3.42</span></div></div></div>
+</div>
+  </div>
+</div></section>
+
+<!-- ================= Learned ================= -->
+<section id="learned"><div class="container">
+  <div class="section-heading"><div class="section-number">✦</div><div>
+    <p class="section-label">Reflection</p><h2>Most Important Thing I Learned</h2></div></div>
+  <div class="content"><p> Frequency is a useful way to think about images. Blurring, sharpening, edge detection, hybrid images and seamless blends are all the same idea (choose which frequency bands to keep, and treat each band at its own scale). Associativity of convolution turned two steps into one DoG filter, and blending per band is why the seam disappears. Also it is super fun to merge and blend random things together but also really hard to get it to look right! Lots of trail and error.</p></div>
+</div></section>
+
+<footer><div class="container">CS 180 · Project 02</div></footer>
+</main>
+</div>
+
+<div class="lightbox" id="lightbox"><span class="lightbox-close">×</span><img alt=""></div>
+
+<script>
+const lb = document.getElementById("lightbox");
+document.addEventListener("click", e => {
+  if (e.target.classList.contains("zoomable")) { lb.querySelector("img").src = e.target.src; lb.classList.add("active"); }
+  else if (lb.classList.contains("active")) lb.classList.remove("active");
+});
+</script>
+</body>
+</html>
