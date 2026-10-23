@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project 3 — Flow Models</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+<style>
+.results-grid.g1{grid-template-columns:minmax(0,1fr)}.results-grid.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.results-grid.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.results-grid.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.results-grid.g5{grid-template-columns:repeat(5,minmax(0,1fr))}.results-grid{gap:18px}
+@media(max-width:800px){.results-grid.g3,.results-grid.g4,.results-grid.g5{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.content h3.sub{margin:44px 0 10px;font-family:'Rajdhani',sans-serif;letter-spacing:.04em}
+.todo{background:#ffd54a;color:#111;padding:0 5px;border-radius:3px;font-weight:600}
+.far-row{display:flex;gap:28px;align-items:flex-end;flex-wrap:wrap;margin:18px 0 6px}
+.far-row figure{margin:0;text-align:center}.far-row figcaption{font-size:.8rem;opacity:.7;margin-top:6px}
+.far-row img{height:auto;border-radius:4px}
+.part-break{padding:70px 0;text-align:center;border-bottom:1px solid var(--line)}
+.part-break h2{font-family:'Rajdhani',sans-serif;font-size:46px;text-transform:uppercase;margin:0}
+</style>
+</head>
+<body>
+<div class="page">
+<aside class="sidebar">
+  <a class="back" href="../index.html">← Back to Portfolio</a>
+  <div class="sidebar-label">Projects</div>
+  <nav>
+    <a href="../0/index.html">00 · Camera</a>
+    <a href="../1/index.html">01 · Prokudin-Gorskii</a>
+    <a href="../2/index.html">02 · Filters &amp; Frequencies</a>
+    <a class="active" href="index.html">03 · Diffusion Models</a>
+    <span class="disabled">04 · (Auto)stitching &amp; Mosaics</span>
+    <span class="disabled">05 · Final Project</span>
+  </nav>
+</aside>
+
+<main>
+<header class="top-nav"><div class="nav-inner">
+  <a class="back" href="#top">Flow Models</a>
+  <div class="nav-links"><a href="#a1">A · Sampling</a><a href="#a2">A · CFG</a><a href="#a3">A · Creative</a><a href="#b1">B · Denoiser</a><a href="#b2">B · Flow</a><a href="#learned">Learned</a></div>
+</div></header>
+
+<div class="hero" id="top"><div class="container hero-content">
+  <p class="eyebrow">CS 180 · Project 03</p>
+  <h1>Flow Models</h1>
+  <p class="hero-subtitle">Part A: sampling, guidance, editing and illusions with the pretrained PixNerd flow model. Part B: a UNet denoiser and flow matching models trained from scratch on MNIST.</p>
+  <div class="hero-meta"><span class="meta active">Part A · Pretrained PixNerd</span><span class="meta active">Part B · MNIST from scratch</span>
+  <span class="meta">Euler Sampling</span><span class="meta">CFG</span><span class="meta">Visual Anagrams</span><span class="meta">Hybrid Images</span><span class="meta">UNet</span></div>
+</div></div>
+
+<div class="part-break"><p class="eyebrow">Part A</p><h2>Exploring the Power of Flow Models</h2></div>
+
+<!-- ============ A1.1 ============ -->
+<section id="a1"><div class="container">
+  <div class="section-heading"><div class="section-number">1.1</div><div><p class="section-label">Part A · Visualizing Training and Sampling</p><h2>Noisy Training Inputs</h2>
+  <p>Linear interpolation between noise and a clean image.</p></div></div>
+  <div class="content">
+    <p class="lead">Convention: <code>x_t = (1 − t)·ε + t·x₁</code>, so t = 0 is pure noise and t = 1 is the clean image. <code>interpolate(image, noise, t)</code> implements this directly, and I checked both endpoints (t = 0 returns ε, t = 1 returns the image). One noise tensor ε is reused at t = 0.25, 0.50, 0.75 for all of Sections 1.1–1.5.</p>
+    <div class="results-grid g1" data-imgs="results/a/training_inputs.png|Original and noisy inputs at t = 0.25, 0.50, 0.75"></div>
+    <p>My image is a Valorant Champions Tour poster photo of a team bowing together on stage, with the tour logo and three city names below. Larger t keeps more of the image. At t = 0.25 the picture is almost entirely noise: only faint dark blobs where the heads are and a ghost of the title text survive. By t = 0.50 the players and the big title are clearly readable, and at t = 0.75 only fine grain remains.</p>
+
+    <h3 class="sub" id="a12">1.2 Classical denoising</h3>
+    <p>Gaussian blur baseline: divide by t to restore the image amplitude, then blur, <code>x̂₁ = G_σ(x_t / t)</code>. The provided cell sweeps σ ∈ {1, 2, 4, 8, 16} and picks the σ with the lowest MSE to the known clean image.</p>
+    <div class="results-grid g1" data-imgs="results/a/blur_0.25.png|t = 0.25;results/a/blur_0.5.png|t = 0.5;results/a/blur_0.75.png|t = 0.75"></div>
+    <div class="callout"><strong>Takeaway</strong><p>Blur cannot separate noise from detail: at low t it must blur so strongly that the image is destroyed, and at high t it still leaves visible grain. The MSE-optimal σ was 8 at t = 0.25, 2 at t = 0.50 and 1 at t = 0.75. At σ = 8 the result is only a smear of color blobs with no recognizable people or text. At σ = 2 the title is readable but colored speckle remains. Even at σ = 1 the grain is still visible and the fine text is softened.</p></div>
+
+    <h3 class="sub" id="a13">1.3 One-step denoising</h3>
+    <p>With <code>predict_velocity</code> and the prompt “a high quality photo”, one prediction gives <code>x̂₁ = x_t + (1 − t)·v_θ(x_t, t, c)</code> (Eq. A.2). The model outputs velocity, not noise, so it is added rather than subtracted.</p>
+    <div class="results-grid g1" data-imgs="results/a/one_step_0.25.png|t = 0.25;results/a/one_step_0.5.png|t = 0.5;results/a/one_step_0.75.png|t = 0.75"></div>
+    <p>One step is far better than blur, but at t = 0.25 the result is smooth and loses detail, because a single linear extrapolation cannot follow a curved path. The players' faces are smeared, the jersey pattern is simplified into large blue shapes, and the small text is garbled into letter-like strokes (the title reads roughly “CHAMPION6 TOUR”). The overall layout, colors and lighting are still recovered.</p>
+
+    <h3 class="sub" id="a14">1.4 Visualizing velocity</h3>
+    <p>The ground-truth update is <code>(1 − t)(x₁ − ε) = x₁ − x_t</code>. The error map is the per-pixel RMS over RGB of the difference between predicted and ground-truth updates. Updates share one symmetric RGB scale (zero = mid gray); error maps share <code>vmin = 0, vmax = 0.2</code> at all three times.</p>
+    <div class="results-grid g1" data-imgs="results/a/velocity_original.png|Original (shown once)"></div>
+    <div class="results-grid g1" data-imgs="results/a/velocity_0.25.png|t = 0.25;results/a/velocity_0.50.png|t = 0.50;results/a/velocity_0.75.png|t = 0.75"></div>
+    <p>Mean per-pixel error: 0.144 at t = 0.25, 0.089 at t = 0.50 and 0.052 at t = 0.75, so the prediction gets closer to the target as the input gets cleaner. The error is concentrated on high-frequency content: jersey patterns, player outlines, the title and the logo strip at the bottom, where it saturates the color scale at t = 0.25. Smooth regions such as the hazy stage lighting and dark areas have low error. The predicted update is a smoother, lower-contrast version of the ground truth: it gets the layout and the broad edges right but not the fine texture or the exact lettering.</p>
+
+    <h3 class="sub" id="a15">1.5 Iterative denoising with Euler sampling</h3>
+    <p><code>euler_sample</code> steps <code>x ← x + h·v(x, t)</code> with h = 0.02, recomputes the velocity at every step and shortens the last step so it ends exactly at t = 1. I tested it on a constant velocity field (starts at 0, 0.5 and 0.93: 50, 25 and 4 steps, including a shortened final step). Below: the saved t = 0.50 input, the initial state, every fifth update and the final image.</p>
+    <div class="results-grid g1" data-imgs="results/a/trajectory.png|Euler trajectory, t = 0.50 → 1.00"></div>
+    <div class="results-grid g1" data-imgs="results/a/comparison.png|Original · Gaussian blur · one-step · Euler (same noisy input)"></div>
+    <div class="callout"><strong>Comparison</strong><p>Euler recovers the most detail, one-step is smoother, and blur is the worst. On the same t = 0.50 input, blur (σ = 2) is still grainy with soft, speckled text. One-step and Euler both give clean, sharp images that are close to the original. Euler is slightly more faithful in the jersey patterns and the small text at the bottom. One caveat when reading the numbers: a one-step prediction approximates the posterior mean of the clean image, which is exactly what minimizes MSE, so it can score a lower MSE than Euler even though Euler looks sharper. Euler commits to one plausible detailed image, which can differ from the original in fine detail. MSE therefore rewards smoothness, and the visual comparison matters as much as the numbers. <span class="todo">reconstruction MSEs (blur / one-step / Euler) from metrics.json</span></p></div>
+
+    <h3 class="sub" id="a16">1.6 Generating images from noise</h3>
+    <p>Setting <code>t_start = 0</code> with random noise makes Euler sampling a generator. Five samples with “a high quality photo”, seeds 180–184:</p>
+    <div class="results-grid g1" data-imgs="results/a/cfg_samples.png|Seeds 180–184, no guidance"></div>
+    <p>The generic prompt strongly favors close-up human portraits, with warped faces and skin. Seeds 182 and 184 are convincing portraits, and 181 is a plausible half-length shot of a standing woman. Seed 180 loses the face entirely (it is a smooth blank skin patch), and seed 183 has a melted, mottled face. Backgrounds are plain and muted, and all five are people, so without guidance the model collapses to a narrow set of subjects with uneven quality.</p>
+  </div>
+</div></section>
+
+<!-- ============ A2 ============ -->
+<section id="a2"><div class="container">
+  <div class="section-heading"><div class="section-number">2.1</div><div><p class="section-label">Part A · Conditional Generation and Guidance</p><h2>Classifier-Free Guidance</h2></div></div>
+  <div class="content">
+    <p class="lead"><code>cfg_velocity</code> evaluates the conditional and empty-prompt branches on the same x and t: <code>v = v_c + w(v_c − v_u)</code> (Eq. A.4), with w = 7 and h = 0.02. With w = 0 it reproduces the conditional prediction exactly (checked in the notebook). Same five initial noises as 1.6:</p>
+    <div class="results-grid g1" data-imgs="results/a/cfg_samples.png|Seeds 180–184, w = 7"></div>
+    <div class="callout"><strong>Comparison with Section 1.6</strong><p>CFG replaces the conditional velocity with <code>v_c + w(v_c − v_u)</code>, which extrapolates away from the unconditional prediction along the direction the prompt adds. With w = 7 this pushes every step harder toward what the prompt describes. In general this gives sharper, more coherent images and stronger prompt alignment than w = 0 (Section 1.6), at the cost of diversity, since samples are pulled toward the prompt's most typical modes. Very large w can also over-saturate colors and contrast. Because the initial noises are identical to Section 1.6, differences between the two grids come only from guidance. <span class="todo">confirm against cfg_samples.png: which seeds improved, any over-saturation, how similar the five images look</span></p></div>
+  </div>
+</div></section>
+
+<!-- ============ A3 ============ -->
+<section id="a3"><div class="container">
+  <div class="section-heading"><div class="section-number">3</div><div><p class="section-label">Part A · Creative Applications</p><h2>Editing and Illusions</h2>
+  <p>h = 0.02, w = 7, empty prompt for the unconditional branch. Starting times 0.02, 0.04, 0.06, 0.10, 0.14, 0.25, 0.50 (left to right after the original).</p></div></div>
+  <div class="content">
+    <h3 class="sub" id="a31">3.1 Image-to-image editing — “a high quality photo”</h3>
+    <p><code>edit</code> noises the image to the starting time, <code>(1 − t₀)ε + t₀x₁</code>, then runs CFG Euler sampling from t₀ to 1. Lower t₀ means more noise and a larger edit.</p>
+    <div class="results-grid g1" data-imgs="results/a/edit_campanile.png|Campanile;results/a/edit_my_image_1.png|My image 1;results/a/edit_my_image_2.png|My image 2"></div>
+    <h3 class="sub">Web image and hand-drawn images</h3>
+    <div class="results-grid g1" data-imgs="results/a/edit_web_image.png|Web image;results/a/edit_drawing_1.png|Drawing 1;results/a/edit_drawing_2.png|Drawing 2"></div>
+    <p>Starting at t₀ means the input is only partly noise: <code>x_t₀ = (1 − t₀)ε + t₀x₁</code>. At very small t₀ (0.02 to 0.06) almost nothing of the original is left, so the model effectively generates a fresh “high quality photo” and keeps at most the coarsest colors and layout. As t₀ grows, more of the low-frequency structure (layout, silhouettes, color regions) survives, and the model fills in plausible detail around it. At t₀ = 0.50 the result is close to the input, with only fine texture changed. The prompt “a high quality photo” pulls everything toward photographic realism, so flat drawings and stylized images tend to become more photo-like at mid-range t₀ rather than staying drawings. This works as editing because the model projects the noised image back onto the set of natural images, and t₀ controls how far it is allowed to move. <span class="todo">add what you see per image: where the original structure returns (which t₀) and what gets hallucinated at the lowest t₀</span></p>
+
+    <h3 class="sub" id="a32">3.2 Text-guided image editing</h3>
+    <p>Same procedure with a prompt describing the edit. Prompts: Campanile “A photograph of mountains”; image 1 “A photograph of a person holding a softtoy”; image 2 “A photograph of a crochet octopus”.</p>
+    <div class="results-grid g1" data-imgs="results/a/text_edit_campanile.png|Campanile;results/a/text_edit_my_image_1.png|My image 1;results/a/text_edit_my_image_2.png|My image 2"></div>
+    <p>Larger starting times preserve more of the original image, while smaller starting times add more noise and give the model more room to follow the prompt. The edit therefore trades faithfulness to the input against fidelity to the text: low t₀ follows the prompt but loses the original structure, high t₀ keeps the structure but barely changes the content, and the useful edits sit in between, where the layout of the input is kept while the content is re-rendered to match the prompt.</p>
+
+    <h3 class="sub" id="a33">3.3 Visual anagrams</h3>
+    <p>At each Euler step: <code>v₁ = v_cfg(x, t, p₁)</code>, <code>v₂ = rotate180(v_cfg(rotate180(x), t, p₂))</code>, <code>v = (v₁ + v₂)/2</code>. The flip rotates by 180° (both spatial axes). Illusions: “a sketch of a vase” ↔ “a sketch of a wine glass” (seed 180), and “a lithograph of a hand” ↔ “a lithograph of a flower” (seed 181).</p>
+    <p>This works because both prompts steer the same image. Viewed upright, the first prompt's velocity is used directly. Rotating x by 180° lets the second prompt see its own subject in its upright orientation, and rotating its velocity back puts that update in the original frame. Averaging means each Euler step is a compromise that moves the image toward both interpretations at once. It needs a transformation that is an exact involution on pixels (rotating twice returns the image, which I checked), so no information is lost between views. Successful illusions often need several prompt and seed attempts, because both subjects have to be recognizable.</p>
+    <div class="results-grid g1" data-imgs="results/a/anagram_views_0.png|Upright and rotated 180°;results/a/anagram_views_1.png|Upright and rotated 180°"></div>
+
+    <h3 class="sub" id="a34">3.4 Hybrid images</h3>
+    <p><code>v = lowpass(v₁) + (v₂ − lowpass(v₂))</code>, with a Gaussian blur of kernel 265 and σ = 16 at 512×512. Prompt 1 (low frequencies) shows from far away, prompt 2 (high frequencies) up close. Pairs (distant / close): “a lithograph of a stone wall” / “a lithograph of a girl” (seed 180), and “a lithograph of a whirlpool of water” / “a lithograph of a wall of fire” (seed 181).</p>
+    <p>Hybrid images exploit how human vision depends on viewing distance: from far away only low spatial frequencies are visible, and up close the high frequencies dominate. At each Euler step I keep the low frequencies of the first prompt's velocity and the high frequencies of the second's, so the final image has the first subject's coarse structure and the second's fine detail. The Gaussian low-pass (σ = 16, kernel 265 at 512×512) sets the cutoff. Shrinking the image to 64 px acts as a low-pass filter on its own, which is why the distant prompt appears in the small version.</p>
+    <div class="far-row">
+      <figure><img src="results/a/hybrid_0.png" class="zoomable" width="512" alt="hybrid 0"><figcaption>Close: “a lithograph of a girl”</figcaption></figure>
+      <figure><img src="results/a/hybrid_0.png" width="64" alt="hybrid 0 far"><figcaption>Distant (64 px): “a lithograph of a stone wall”</figcaption></figure>
+    </div>
+    <div class="far-row">
+      <figure><img src="results/a/hybrid_1.png" class="zoomable" width="512" alt="hybrid 1"><figcaption>Close: “a lithograph of a wall of fire”</figcaption></figure>
+      <figure><img src="results/a/hybrid_1.png" width="64" alt="hybrid 1 far"><figcaption>Distant (64 px): “a lithograph of a whirlpool of water”</figcaption></figure>
+    </div>
+  </div>
+</div></section>
+
+<div class="part-break"><p class="eyebrow">Part B</p><h2>Flow Matching from Scratch</h2></div>
+
+<!-- ============ B1 ============ -->
+<section id="b1"><div class="container">
+  <div class="section-heading"><div class="section-number">1</div><div><p class="section-label">Part B · Single-Step Denoising UNet</p><h2>Training a Denoiser</h2>
+  <p>Unconditional UNet, L2 loss, z = x + σε.</p></div></div>
+  <div class="content">
+    <p class="lead">The UNet follows Figure 1: Conv → two DownBlocks → Flatten (7×7 → 1×1) → Unflatten → concatenations with skip connections → UpBlocks → Conv. Operations: Conv (3,1,1), DownConv (3,2,1), UpConv (4,2,1), Flatten = AvgPool(7), Unflatten = ConvTranspose2d(7,7,0); each composed block is followed by BatchNorm and GELU. Each of my ConvBlock, DownBlock and UpBlock contains a single convolution (Conv, DownConv or UpConv respectively) followed by BatchNorm and GELU, rather than two convolutions.</p>
+    <h3 class="sub">1.2 Noising process</h3>
+    <div class="results-grid g1" data-imgs="results/b/noise_levels.png|σ = 0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0 (rows)"></div>
+
+    <h3 class="sub" id="b121">1.2.1 Training at σ = 0.5</h3>
+    <p>MNIST train set, shuffled, batch 256, D = 128, Adam lr = 1e-4, 5 epochs; fresh noise every batch. Last-step loss fell from 0.0139 (epoch 1) to 0.0097 (epoch 5).</p>
+    <div class="results-grid g2" data-imgs="results/b/denoise_epoch1.png|Test set after epoch 1;results/b/denoise_epoch5.png|Test set after epoch 5"></div>
+    <div class="results-grid g1" data-imgs="results/b/denoise_loss.png|Training loss (every iteration, with moving average)"></div>
+
+    <h3 class="sub" id="b122">1.2.2 Out-of-distribution noise</h3>
+    <p>Same test digits at σ = 0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0 (for each digit: noisy row, denoised row).</p>
+    <div class="results-grid g1" data-imgs="results/b/denoise_ood.png|Denoiser trained at σ = 0.5"></div>
+    <p>Denoising is clean for every σ up to 0.5, including the clean σ = 0 input, which comes back unchanged. At σ = 0.6 the digits are still recognizable but the strokes begin to thin and fade. At σ = 0.8 there are stray strokes and broken pieces, and at σ = 1.0 the outputs turn into scribbles that are barely digits, since the network has only ever seen σ = 0.5.</p>
+
+    <h3 class="sub" id="b123">1.2.3 Denoising pure noise</h3>
+    <div class="results-grid g3" data-imgs="results/b/pure_noise_epoch1.png|After epoch 1;results/b/pure_noise_epoch5.png|After epoch 5;results/b/pure_noise_mean_image.png|Mean of training images"></div>
+    <div class="results-grid g1" data-imgs="results/b/pure_noise_loss.png|Training loss (pure-noise input)"></div>
+    <div class="callout"><strong>What are the outputs, and why?</strong><p>Every output is the same blurry, ghost-like blob that looks like all the digits 0–9 stacked on top of each other, no matter which noise went in. Pure noise says nothing about which digit is the target, so the best the network can do under an MSE loss is to predict the average target, which is the pixelwise mean of the training images. It learns to ignore its input and always output that average. The MSE between the outputs and the mean training image is 0.0002, and the loss stays flat around 0.067, which is how much the training images vary around their mean.</p></div>
+  </div>
+</div></section>
+
+<!-- ============ B2 ============ -->
+<section id="b2"><div class="container">
+  <div class="section-heading"><div class="section-number">2</div><div><p class="section-label">Part B · Flow Matching</p><h2>Time- and Class-Conditioned UNets</h2>
+  <p>x_t = (1 − t)x₀ + t·x₁, predict the flow x₁ − x₀.</p></div></div>
+  <div class="content">
+    <p class="lead">Time conditioning (2.1): <code>t</code> is normalized to [0, 1] and embedded by two FCBlocks (Linear → GELU → Linear). The unflatten output is multiplied by <code>t₁</code> and the first UpBlock output by <code>t₂</code>. Class conditioning (2.4) adds two more FCBlocks on a one-hot vector: <code>c₁·unflatten + t₁</code> and <code>c₂·up1 + t₂</code>, with the class vector zeroed 10% of the time.</p>
+
+    <h3 class="sub" id="b22">2.2–2.3 Time-conditioned UNet</h3>
+    <p>D = 64, batch 64, Adam lr = 1e-2 with ExponentialLR (γ = 0.1<sup>1/10</sup>, stepped each epoch), 10 epochs. Sampling: 50 Euler steps from noise.</p>
+    <div class="results-grid g3" data-imgs="results/b/time_epoch1.png|Epoch 1;results/b/time_epoch5.png|Epoch 5;results/b/time_epoch10.png|Epoch 10"></div>
+    <div class="results-grid g1" data-imgs="results/b/time_loss.png|Training loss"></div>
+    <p>By epoch 10 most samples are digit-like strokes, though some are malformed, which is expected without class guidance.</p>
+
+    <h3 class="sub" id="b25">2.5–2.6 Class-conditioned UNet</h3>
+    <p>Same setup, 10 epochs, p_uncond = 0.1. Sampling uses 300 Euler steps and classifier-free guidance γ = 5.0, four instances of each digit (each row is 0–9).</p>
+    <div class="results-grid g3" data-imgs="results/b/class_epoch1.png|Epoch 1;results/b/class_epoch5.png|Epoch 5;results/b/class_epoch10.png|Epoch 10"></div>
+    <div class="results-grid g1" data-imgs="results/b/class_loss.png|Training loss"></div>
+
+    <h3 class="sub">Removing the learning-rate scheduler</h3>
+    <p>I removed ExponentialLR and trained with a constant lr of 1e-3, the value the schedule decays to. The mean loss over the last 200 steps was 0.0932 with the scheduler and 0.0949 without, a tiny and noisy difference, and the samples are visually comparable: at epoch 10 both models produce clean, correctly labeled digits for every class, with similar variety within each digit. 1e-3 is the only constant learning rate I tried. Starting at 1e-2 and decaying to 1e-3 therefore gave no clear benefit over simply using 1e-3 for this model and training length.</p>
+    <div class="results-grid g2" data-imgs="results/b/class_no_scheduler_epoch10.png|No scheduler, epoch 10 (lr = 1e-3);results/b/class_no_scheduler_loss.png|Training loss, no scheduler"></div>
+  </div>
+</div></section>
+
+<!-- ============ Learned ============ -->
+<section id="learned"><div class="container">
+  <div class="section-heading"><div class="section-number">✦</div><div><p class="section-label">Reflection</p><h2>Most Important Thing I Learned</h2></div></div>
+  <div class="content"><p>Iterating beats predicting in one shot: a single velocity prediction gives a smooth average of the possible images, and it is the many small Euler steps, each re-evaluating the model on a slightly cleaner input, that bring back sharp detail. The pure-noise experiment made this concrete. When the input carries no information, an MSE-trained network just outputs the mean of the data, so a generative model only works because every step sees an input that still tells it something. Classifier-free guidance then pushes each step toward the prompt, and in Part B it was the difference between malformed strokes and clean digits of the requested class.</p></div>
+</div></section>
+
+<footer><div class="container">CS 180 · Project 03 · Code: Part A and Part B notebooks</div></footer>
+</main>
+</div>
+
+<div class="lightbox" id="lightbox"><span class="lightbox-close">×</span><img alt=""></div>
+<script>
+document.querySelectorAll("[data-imgs]").forEach(g=>{g.innerHTML=g.dataset.imgs.split(";").map(s=>{const[p,l]=s.trim().split("|");
+return `<div class="result-card"><div class="result-image"><img class="zoomable" src="${p}" alt="${l}" loading="lazy"></div><div class="result-info"><p class="result-name">${l}</p></div></div>`}).join("")});
+const lb=document.getElementById("lightbox");
+document.addEventListener("click",e=>{if(e.target.classList.contains("zoomable")){lb.querySelector("img").src=e.target.src;lb.classList.add("active")}else if(lb.classList.contains("active"))lb.classList.remove("active")});
+</script>
+</body>
+</html>
