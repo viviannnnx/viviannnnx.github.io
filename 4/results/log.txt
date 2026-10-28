@@ -1,0 +1,238 @@
+[mosaic1] image1.2 -> image1.3: 12 points, reprojection error mean 3.03px, max 5.59px
+H =
+[[ 1.09623e+00 -5.06703e-02 -5.56246e+02]
+ [ 1.61610e-01  1.05222e+00 -7.76928e+00]
+ [ 1.46679e-04 -4.56074e-05  1.00000e+00]]
+[mosaic1] image1.3 -> image1.4: 12 points, reprojection error mean 8.63px, max 28.05px
+H =
+[[ 7.91904e-01 -9.75097e-03 -5.91046e+02]
+ [ 9.90370e-02  8.24148e-01 -1.17710e+02]
+ [-1.51048e-04 -4.74310e-05  1.00000e+00]]
+[mosaic2] image2.1 -> image2.2: 12 points, reprojection error mean 5.35px, max 10.43px
+H =
+[[ 1.13834e+00 -4.56973e-03 -5.99807e+02]
+ [ 2.44093e-02  1.07262e+00 -2.60301e+00]
+ [ 1.90992e-04 -4.06082e-05  1.00000e+00]]
+[mosaic2] image2.2 -> image2.3: 12 points, reprojection error mean 5.64px, max 11.14px
+H =
+[[ 1.04273e+00  3.91398e-02 -5.79437e+02]
+ [-1.38481e-01  1.13132e+00  8.25087e+01]
+ [ 1.11104e-04  2.35790e-05  1.00000e+00]]
+[mosaic3] image3.1 -> image3.2: 12 points, reprojection error mean 7.61px, max 17.98px
+H =
+[[ 1.62457e+00  1.42983e-01 -1.31972e+03]
+ [ 3.30894e-01  1.53325e+00 -3.13194e+02]
+ [ 5.34215e-04 -6.20093e-06  1.00000e+00]]
+[mosaic3] image3.2 -> image3.3: 12 points, reprojection error mean 177.78px, max 394.07px
+H =
+[[-1.87119e-01  1.60095e-03  2.16197e+02]
+ [-8.20681e-01  6.67828e-02  8.79140e+02]
+ [-8.68785e-04  1.92462e-08  1.00000e+00]]
+[rectify1] output 500x380, nearest 24.6 ms, bilinear 66.6 ms (2.7x)
+H =
+[[ 8.37547e-01 -3.30300e-01 -1.63915e+02]
+ [ 6.67176e-03 -2.41851e-01  1.10481e+02]
+ [ 4.80658e-05 -1.32353e-03  1.00000e+00]]
+[rectify2] output 380x500, nearest 36.1 ms, bilinear 112.7 ms (3.1x)
+H =
+[[ 1.30203e-01 -2.37429e-01  1.36968e+02]
+ [-8.88238e-02 -2.03772e-01  2.41398e+02]
+ [-3.82296e-04 -7.87761e-04  1.00000e+00]]
+[rectify3] output 400x400, nearest 31.6 ms, bilinear 84.5 ms (2.7x)
+H =
+[[ 2.12481e-01 -3.30526e-01  9.12819e+01]
+ [ 3.85132e-02 -3.14233e-01  1.08169e+02]
+ [-9.60002e-05 -1.54671e-03  1.00000e+00]]
+[mosaic2] using cached correspondences points\mosaic2_0to1.json
+[mosaic2] using cached correspondences points\mosaic2_1to2.json
+[mosaic2] canvas 2282x1505
+[mosaic2] warp + both blends: 17.9s
+[mosaic3] using cached correspondences points\mosaic3_0to1.json
+[mosaic3] using cached correspondences points\mosaic3_1to2.json
+[mosaic3] canvas 2520x2475
+[mosaic3] warp + both blends: 34.1s
+[rectify1] using cached corners points\rectify1_corners.json
+[rectify1] output 500x380, nearest 23.7 ms, bilinear 64.6 ms (2.7x)
+H =
+[[ 8.37547e-01 -3.30300e-01 -1.63915e+02]
+ [ 6.67176e-03 -2.41851e-01  1.10481e+02]
+ [ 4.80658e-05 -1.32353e-03  1.00000e+00]]
+[rectify2] using cached corners points\rectify2_corners.json
+[rectify2] output 380x500, nearest 34.5 ms, bilinear 104.8 ms (3.0x)
+H =
+[[ 1.30203e-01 -2.37429e-01  1.36968e+02]
+ [-8.88238e-02 -2.03772e-01  2.41398e+02]
+ [-3.82296e-04 -7.87761e-04  1.00000e+00]]
+[rectify3] using cached corners points\rectify3_corners.json
+[rectify3] output 400x400, nearest 25.3 ms, bilinear 79.6 ms (3.1x)
+H =
+[[ 2.12481e-01 -3.30526e-01  9.12819e+01]
+ [ 3.85132e-02 -3.14233e-01  1.08169e+02]
+ [-9.60002e-05 -1.54671e-03  1.00000e+00]]
+[mosaic1] using cached correspondences points\mosaic1_0to1.json
+[mosaic1] using cached correspondences points\mosaic1_1to2.json
+[mosaic1] canvas 2318x1479
+[mosaic1] warp + both blends: 15.7s
+[mosaic2] using cached correspondences points\mosaic2_0to1.json
+[mosaic2] using cached correspondences points\mosaic2_1to2.json
+[mosaic2] canvas 2282x1505
+[mosaic2] warp + both blends: 16.2s
+[mosaic3] using cached correspondences points\mosaic3_0to1.json
+[mosaic3] using cached correspondences points\mosaic3_1to2.json
+[mosaic3] canvas 2520x2475
+[mosaic3] warp + both blends: 35.6s
+[rectify1] output 500x380, nearest 30.5 ms, bilinear 108.5 ms (3.6x)
+H =
+[[ 1.27136e+02  1.12179e+01 -5.83181e+04]
+ [-2.92553e+00  1.05319e+02 -3.88125e+04]
+ [ 1.19275e-02  2.24807e-02  1.00000e+00]]
+[rectify2] output 380x500, nearest 37.9 ms, bilinear 116.6 ms (3.1x)
+H =
+[[-3.42602e+00  1.46829e+00  7.69619e+02]
+ [-1.96028e+00 -3.50787e+00  4.44272e+03]
+ [-1.22458e-03 -9.10596e-04  1.00000e+00]]
+[rectify3] output 400x400, nearest 32.9 ms, bilinear 101.7 ms (3.1x)
+H =
+[[ 3.72880e-01 -3.44026e-02 -3.83109e+01]
+ [-8.57835e-02  6.63890e-01 -2.26414e+02]
+ [-6.44769e-04  4.86934e-05  1.00000e+00]]
+[rectify1] output 500x380, nearest 32.3 ms, bilinear 109.2 ms (3.4x)
+H =
+[[ 3.80088e+00 -5.82510e-02 -1.94409e+03]
+ [-5.14947e-02  5.87039e-01 -2.53496e+02]
+ [-3.05358e-04 -1.79862e-04  1.00000e+00]]
+[rectify1] using cached corners points\rectify1_corners.json
+[rectify1] output 500x380, nearest 35.2 ms, bilinear 103.1 ms (2.9x)
+H =
+[[ 3.80088e+00 -5.82510e-02 -1.94409e+03]
+ [-5.14947e-02  5.87039e-01 -2.53496e+02]
+ [-3.05358e-04 -1.79862e-04  1.00000e+00]]
+[rectify2] output 380x500, nearest 32.0 ms, bilinear 87.0 ms (2.7x)
+H =
+[[-6.28203e-01 -2.56409e-01  3.75340e+02]
+ [ 1.16121e-03 -2.40371e-01  2.00288e+02]
+ [ 2.74916e-03 -6.29852e-03  1.00000e+00]]
+[rectify3] using cached corners points\rectify3_corners.json
+[rectify3] output 400x400, nearest 30.4 ms, bilinear 92.1 ms (3.0x)
+H =
+[[ 3.72880e-01 -3.44026e-02 -3.83109e+01]
+ [-8.57835e-02  6.63890e-01 -2.26414e+02]
+ [-6.44769e-04  4.86934e-05  1.00000e+00]]
+[rectify1] using cached corners points\rectify1_corners.json
+[rectify1] output 500x380, nearest 35.8 ms, bilinear 100.5 ms (2.8x)
+H =
+[[ 3.80088e+00 -5.82510e-02 -1.94409e+03]
+ [-5.14947e-02  5.87039e-01 -2.53496e+02]
+ [-3.05358e-04 -1.79862e-04  1.00000e+00]]
+[rectify2] output 380x500, nearest 36.8 ms, bilinear 114.1 ms (3.1x)
+H =
+[[ 6.83956e-01 -6.97309e-02 -1.13841e+02]
+ [-7.16328e-02  1.32951e+00 -2.97574e+02]
+ [-1.43553e-04  7.54360e-04  1.00000e+00]]
+[rectify3] using cached corners points\rectify3_corners.json
+[rectify3] output 400x400, nearest 29.9 ms, bilinear 90.3 ms (3.0x)
+H =
+[[ 3.72880e-01 -3.44026e-02 -3.83109e+01]
+ [-8.57835e-02  6.63890e-01 -2.26414e+02]
+ [-6.44769e-04  4.86934e-05  1.00000e+00]]
+[mosaic1] using cached correspondences points\mosaic1_0to1.json
+[mosaic1] using cached correspondences points\mosaic1_1to2.json
+[mosaic1] image1.2 -> image1.3: 12 points, reprojection error mean 3.03px, max 5.59px
+H =
+[[ 1.09623e+00 -5.06703e-02 -5.56246e+02]
+ [ 1.61610e-01  1.05222e+00 -7.76928e+00]
+ [ 1.46679e-04 -4.56074e-05  1.00000e+00]]
+[mosaic1] image1.3 -> image1.4: 12 points, reprojection error mean 8.63px, max 28.05px
+H =
+[[ 7.91904e-01 -9.75097e-03 -5.91046e+02]
+ [ 9.90370e-02  8.24148e-01 -1.17710e+02]
+ [-1.51048e-04 -4.74310e-05  1.00000e+00]]
+[mosaic2] using cached correspondences points\mosaic2_0to1.json
+[mosaic2] using cached correspondences points\mosaic2_1to2.json
+[mosaic2] image2.1 -> image2.2: 12 points, reprojection error mean 5.35px, max 10.43px
+H =
+[[ 1.13834e+00 -4.56973e-03 -5.99807e+02]
+ [ 2.44093e-02  1.07262e+00 -2.60301e+00]
+ [ 1.90992e-04 -4.06082e-05  1.00000e+00]]
+[mosaic2] image2.2 -> image2.3: 12 points, reprojection error mean 5.64px, max 11.14px
+H =
+[[ 1.04273e+00  3.91398e-02 -5.79437e+02]
+ [-1.38481e-01  1.13132e+00  8.25087e+01]
+ [ 1.11104e-04  2.35790e-05  1.00000e+00]]
+[mosaic3] using cached correspondences points\mosaic3_0to1.json
+[mosaic3] image3.1 -> image3.2: 12 points, reprojection error mean 7.61px, max 17.98px
+H =
+[[ 1.62457e+00  1.42983e-01 -1.31972e+03]
+ [ 3.30894e-01  1.53325e+00 -3.13194e+02]
+ [ 5.34215e-04 -6.20093e-06  1.00000e+00]]
+[mosaic3] image3.2 -> image3.3: 12 points, reprojection error mean 10.50px, max 20.04px
+H =
+[[ 1.27224e+00  1.07320e-01 -1.07965e+03]
+ [ 1.04341e-01  1.28462e+00 -1.34537e+02]
+ [ 2.41856e-04  3.46120e-05  1.00000e+00]]
+[rectify1] using cached corners points\rectify1_corners.json
+[rectify1] output 500x380, nearest 31.2 ms, bilinear 101.8 ms (3.3x)
+H =
+[[ 3.80088e+00 -5.82510e-02 -1.94409e+03]
+ [-5.14947e-02  5.87039e-01 -2.53496e+02]
+ [-3.05358e-04 -1.79862e-04  1.00000e+00]]
+[rectify2] using cached corners points\rectify2_corners.json
+[rectify2] output 380x500, nearest 35.0 ms, bilinear 112.2 ms (3.2x)
+H =
+[[ 6.83956e-01 -6.97309e-02 -1.13841e+02]
+ [-7.16328e-02  1.32951e+00 -2.97574e+02]
+ [-1.43553e-04  7.54360e-04  1.00000e+00]]
+[rectify3] using cached corners points\rectify3_corners.json
+[rectify3] output 400x400, nearest 29.2 ms, bilinear 82.7 ms (2.8x)
+H =
+[[ 3.72880e-01 -3.44026e-02 -3.83109e+01]
+ [-8.57835e-02  6.63890e-01 -2.26414e+02]
+ [-6.44769e-04  4.86934e-05  1.00000e+00]]
+[mosaic1] using cached correspondences points\mosaic1_0to1.json
+[mosaic1] using cached correspondences points\mosaic1_1to2.json
+[mosaic1] canvas 2318x1479
+[mosaic1] warp + both blends: 15.3s
+[mosaic2] using cached correspondences points\mosaic2_0to1.json
+[mosaic2] using cached correspondences points\mosaic2_1to2.json
+[mosaic2] canvas 2282x1505
+[mosaic2] warp + both blends: 16.3s
+[mosaic3] using cached correspondences points\mosaic3_0to1.json
+[mosaic3] using cached correspondences points\mosaic3_1to2.json
+[mosaic3] canvas 3647x2475
+[mosaic3] warp + both blends: 45.2s
+[rectify1] using cached corners points\rectify1_corners.json
+[rectify1] output 150x500, nearest 13.3 ms, bilinear 40.1 ms (3.0x)
+H =
+[[ 1.13493e+00 -1.73936e-02 -5.80500e+02]
+ [-6.77991e-02  7.72910e-01 -3.33759e+02]
+ [-3.05358e-04 -1.79862e-04  1.00000e+00]]
+[rectify2] using cached corners points\rectify2_corners.json
+[rectify2] output 500x300, nearest 25.8 ms, bilinear 77.9 ms (3.0x)
+H =
+[[ 9.00513e-01 -9.18093e-02 -1.49885e+02]
+ [-4.29223e-02  7.96637e-01 -1.78306e+02]
+ [-1.43553e-04  7.54360e-04  1.00000e+00]]
+[rectify3] using cached corners points\rectify3_corners.json
+[rectify3] output 500x200, nearest 16.8 ms, bilinear 57.6 ms (3.4x)
+H =
+[[ 4.66334e-01 -4.30249e-02 -4.79127e+01]
+ [-4.27842e-02  3.31113e-01 -1.12923e+02]
+ [-6.44769e-04  4.86934e-05  1.00000e+00]]
+[rectify1] using cached corners points\rectify1_corners.json
+[rectify1] output 150x500, nearest 14.0 ms, bilinear 40.8 ms (2.9x)
+H =
+[[ 1.13493e+00 -1.73936e-02 -5.80500e+02]
+ [-6.77991e-02  7.72910e-01 -3.33759e+02]
+ [-3.05358e-04 -1.79862e-04  1.00000e+00]]
+[rectify2] using cached corners points\rectify2_corners.json
+[rectify2] output 300x500, nearest 25.8 ms, bilinear 83.2 ms (3.2x)
+H =
+[[ 5.39586e-01 -5.50120e-02 -8.98111e+01]
+ [-7.16328e-02  1.32951e+00 -2.97574e+02]
+ [-1.43553e-04  7.54360e-04  1.00000e+00]]
+[rectify3] using cached corners points\rectify3_corners.json
+[rectify3] output 500x200, nearest 19.6 ms, bilinear 48.7 ms (2.5x)
+H =
+[[ 4.66334e-01 -4.30249e-02 -4.79127e+01]
+ [-4.27842e-02  3.31113e-01 -1.12923e+02]
+ [-6.44769e-04  4.86934e-05  1.00000e+00]]

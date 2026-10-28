@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project 4A — Image Warping &amp; Mosaicing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+<style>
+.results-grid.g1{grid-template-columns:minmax(0,1fr)}.results-grid.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.results-grid.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.results-grid.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.results-grid{gap:18px}
+@media(max-width:800px){.results-grid.g3,.results-grid.g4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.content h3.sub{margin:44px 0 10px;font-family:'Rajdhani',sans-serif;letter-spacing:.04em}
+.todo{background:#ffd54a;color:#111;padding:0 5px;border-radius:3px;font-weight:600}
+.hero::before{content:"04"}
+.part-break{padding:70px 0;text-align:center;border-bottom:1px solid var(--line)}
+.part-break h2{font-family:'Rajdhani',sans-serif;font-size:46px;text-transform:uppercase;margin:0}
+.content a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="page">
+<aside class="sidebar">
+  <a class="back" href="../index.html">← Back to Portfolio</a>
+  <div class="sidebar-label">Projects</div>
+  <nav>
+    <a href="../0/index.html">00 · Camera</a>
+    <a href="../1/index.html">01 · Prokudin-Gorskii</a>
+    <a href="../2/index.html">02 · Filters &amp; Frequencies</a>
+    <a href="../3/index.html">03 · Diffusion Models</a>
+    <a class="active" href="index.html">04 · (Auto)stitching &amp; Mosaics</a>
+    <span class="disabled">05 · Final Project</span>
+  </nav>
+</aside>
+
+<main>
+<header class="top-nav"><div class="nav-inner">
+  <a class="back" href="#top">Warping &amp; Mosaicing</a>
+  <div class="nav-links"><a href="#a1">A.1 · Shoot</a><a href="#a2">A.2 · Homographies</a><a href="#a3">A.3 · Warp</a><a href="#a4">A.4 · Mosaics</a><a href="#learned">Learned</a></div>
+</div></header>
+
+<div class="hero" id="top"><div class="container hero-content">
+  <p class="eyebrow">CS 180 · Project 04 · Part A</p>
+  <h1>Image Warping &amp; Mosaicing</h1>
+  <p class="hero-subtitle">Hand-picked correspondences, homographies solved by least squares, inverse warping with two interpolation methods written from scratch, and blended mosaics.</p>
+  <div class="hero-meta"><span class="meta active">Part A · Manual Mosaics</span>
+  <span class="meta">Homography</span><span class="meta">Inverse Warping</span><span class="meta">Rectification</span><span class="meta">Two-band Blending</span></div>
+</div></div>
+
+<!-- ============ A1 ============ -->
+<section id="a1"><div class="container">
+  <div class="section-heading"><div class="section-number">A.1</div><div><p class="section-label">Part A · Shoot the Pictures</p><h2>Source Photos</h2></div></div>
+  <div class="content">
+    <p class="lead">I shot each set from a fixed spot and pivoted the camera, so the centre of projection stays roughly fixed and the views are related by a homography. Camera: Iphone 12 :(((, about 35%  overlap, handheld, exposure kept the same within each set. The middle photo is the reference in every set.</p>
+
+    <h3 class="sub">Mosaic 1 — Chan Shun Auditorium</h3>
+    <div class="results-grid g1" data-imgs="results/A1_sources/mosaic1_sources.png|Mosaic 1 sources: left, centre (ref), right"></div>
+    <h3 class="sub">Mosaic 2 — My messy room</h3>
+    <div class="results-grid g1" data-imgs="results/A1_sources/mosaic2_sources.png|Mosaic 2 sources: left, centre (ref), right"></div>
+    <h3 class="sub">Mosaic 3 — Living Room</h3>
+    <div class="results-grid g1" data-imgs="results/A1_sources/mosaic3_sources.png|Mosaic 3 sources: left, centre (ref), right"></div>
+  </div>
+</div></section>
+
+<!-- ============ A2 ============ -->
+<section id="a2"><div class="container">
+  <div class="section-heading"><div class="section-number">A.2</div><div><p class="section-label">Part A · Recover Homographies</p><h2>Computing H</h2></div></div>
+  <div class="content">
+    <p class="lead">A homography maps a point <code>p = (x, y)</code> in one photo to <code>p' = (x', y')</code> in the next, with <code>H₃₃ = 1</code> so there are 8 unknowns. Each correspondence gives two linear equations, so my <code>computeH(im1_pts, im2_pts)</code> stacks them into <code>A h = b</code>. I clicked 12 pairs per image pair, which makes the system overdetermined (24 equations, 8 unknowns), and solve it with least squares.</p>
+
+    <div class="code-wrapper"><span class="code-label">Two rows of A and b per correspondence</span>
+<pre>[ x  y  1  0  0  0  -x·x'  -y·x' ]  [h1..h8]ᵀ = [ x' ]
+[ 0  0  0  x  y  1  -x·y'  -y·y' ]                [ y' ]
+
+h = argmin ‖A h − b‖²      H = [[h1 h2 h3], [h4 h5 h6], [h7 h8 1]]</pre></div>
+
+    <div class="code-wrapper"><span class="code-label">computeH</span>
+<pre>def computeH(im1_pts, im2_pts):
+    A, b = build_system(im1_pts, im2_pts)      # 2n x 8 system
+    h, *_ = np.linalg.lstsq(A, b, rcond=None)  # least squares
+    return np.append(h, 1.0).reshape(3, 3)</pre></div>
+
+    <p>Photos are labelled left → centre → right, and each side photo is matched to its neighbour. I picked sharp, distinctive features (corners of windows, signs, edges) spread across the whole overlap, since clustered points make H unstable.</p>
+
+    <h3 class="sub">Correspondences</h3>
+    <div class="results-grid g2" data-imgs="results/A2_homographies/mosaic1_corr_0to1.png|Mosaic 1: left ↔ centre;results/A2_homographies/mosaic1_corr_1to2.png|Mosaic 1: centre ↔ right"></div>
+    <div class="results-grid g2" data-imgs="results/A2_homographies/mosaic2_corr_0to1.png|Mosaic 2: left ↔ centre;results/A2_homographies/mosaic2_corr_1to2.png|Mosaic 2: centre ↔ right"></div>
+    <div class="results-grid g2" data-imgs="results/A2_homographies/mosaic3_corr_0to1.png|Mosaic 3: left ↔ centre;results/A2_homographies/mosaic3_corr_1to2.png|Mosaic 3: centre ↔ right"></div>
+
+    <h3 class="sub">System of equations and recovered H</h3>
+    <p>Example for Mosaic 1, left → centre. The full systems for every pair are in the text files linked below.</p>
+    <div class="code-wrapper"><span class="code-label">A (first rows) | b </span>
+<pre>A (2n x 8) | b (2n)
+      715.25       371.97         1.00         0.00         0.00         0.00   -139533.77    -72565.49 |     195.08
+        0.00         0.00         0.00       715.25       371.97         1.00   -327056.42   -170087.92 |     457.26
+      830.64       281.66         1.00         0.00         0.00         0.00   -257896.24    -87449.91 |     310.48
+        0.00         0.00         0.00       830.64       281.66         1.00   -320088.27   -108538.58 |     385.35
+H =
+[[   1.096229   -0.05067  -556.245502]
+ [   0.16161     1.052216   -7.769276]
+ [   0.000147   -0.000046    1.      ]]</pre></div>
+    <p>Full output:
+      <a href="results/A2_homographies/mosaic1_system_0to1.txt">M1 0→1</a> ·
+      <a href="results/A2_homographies/mosaic1_system_1to2.txt">M1 1→2</a> ·
+      <a href="results/A2_homographies/mosaic2_system_0to1.txt">M2 0→1</a> ·
+      <a href="results/A2_homographies/mosaic2_system_1to2.txt">M2 1→2</a> ·
+      <a href="results/A2_homographies/mosaic3_system_0to1.txt">M3 0→1</a> ·
+      <a href="results/A2_homographies/mosaic3_system_1to2.txt">M3 1→2</a></p>
+
+    <div class="table-wrapper"><table>
+        <thead><tr><th>Pair</th><th>Points</th><th>Mean error (px)</th><th>Max error (px)</th></tr></thead>
+        <tbody>
+            <tr><td>Mosaic 1: left → centre</td><td>12</td><td>3.03</td><td>5.59</td></tr>
+            <tr><td>Mosaic 1: centre → right</td><td>12</td><td>8.63</td><td>28.05</td></tr>
+            <tr><td>Mosaic 2: left → centre</td><td>12</td><td>5.35</td><td>10.43</td></tr>
+            <tr><td>Mosaic 2: centre → right</td><td>12</td><td>5.64</td><td>11.14</td></tr>
+            <tr><td>Mosaic 3: left → centre</td><td>12</td><td>7.61</td><td>17.98</td></tr>
+            <tr><td>Mosaic 3: centre → right</td><td>12</td><td>10.50</td><td>20.04</td></tr>
+        </tbody></table></div>
+    <div class="callout"><strong>Reading the error</strong><p>Reprojection error is the distance between <code>H·p</code> and the clicked point in the other photo (numbers from <code>results/log.txt</code>). Mean errors range from about 3 to 10 px, with Mosaic 3 the worst. A few badly placed points dominate the maximum error (for example near the bottom edge of Mosaic 1's centre-to-right pair), and the rest come from click precision, small parallax from handheld pivoting, and lens distortion near the image borders.</p></div>
+  </div>
+</div></section>
+
+<!-- ============ A3 ============ -->
+<section id="a3"><div class="container">
+  <div class="section-heading"><div class="section-number">A.3</div><div><p class="section-label">Part A · Warp the Images</p><h2>Warping &amp; Rectification</h2></div></div>
+  <div class="content">
+    <p class="lead">Both <code>warpImageNearestNeighbor(im, H)</code> and <code>warpImageBilinear(im, H)</code> use inverse warping. I push the four image corners through H to get the output bounding box, map every output pixel back through <code>H⁻¹</code> to a source coordinate, and sample there. This leaves no holes in the output. Pixels whose source coordinate falls outside the photo get alpha = 0 (returned as a mask). Pixel (0, 0) is the centre of the top-left pixel.</p>
+
+    <div class="code-wrapper"><span class="code-label">Interpolation</span>
+<pre>nearest:   out(x, y) = im[ round(ys), round(xs) ]
+
+bilinear:  a = xs − ⌊xs⌋,  b = ys − ⌊ys⌋
+           out = (1−a)(1−b)·I00 + a(1−b)·I10 + (1−a)b·I01 + a·b·I11</pre></div>
+
+    <h3 class="sub">Rectification</h3>
+    <p>To test the warp, I rectified photos of known rectangles. I click the four corners (top-left, top-right, bottom-right, bottom-left) and map them to an upright rectangle with the object's real aspect ratio, using <code>computeH</code> with the corners as <code>im1_pts</code> and the rectangle as <code>im2_pts</code>. Order: input with clicked corners, nearest neighbor, bilinear.</p>
+
+    <h3 class="sub">Rectification 1 — Window, 3:10</h3>
+    <div class="results-grid g3" data-imgs="results/A3_rectification/rect_rectify1_input.png|Input with clicked corners;results/A3_rectification/rect_rectify1_nearest.jpg|Nearest neighbor;results/A3_rectification/rect_rectify1_bilinear.jpg|Bilinear"></div>
+    <div class="results-grid g1" data-imgs="results/A3_rectification/rect_rectify1_zoom.png|Zoomed crop: nearest vs. bilinear"></div>
+
+    <h3 class="sub">Rectification 2 — Laptop, 3:5</h3>
+    <div class="results-grid g3" data-imgs="results/A3_rectification/rect_rectify2_input.png|Input with clicked corners;results/A3_rectification/rect_rectify2_nearest.jpg|Nearest neighbor;results/A3_rectification/rect_rectify2_bilinear.jpg|Bilinear"></div>
+    <div class="results-grid g1" data-imgs="results/A3_rectification/rect_rectify2_zoom.png|Zoomed crop: nearest vs. bilinear"></div>
+
+    <h3 class="sub">Rectification 3 — Hush Valorant, 5:2</h3>
+    <div class="results-grid g3" data-imgs="results/A3_rectification/rect_rectify3_input.png|Input with clicked corners;results/A3_rectification/rect_rectify3_nearest.jpg|Nearest neighbor;results/A3_rectification/rect_rectify3_bilinear.jpg|Bilinear"></div>
+    <div class="results-grid g1" data-imgs="results/A3_rectification/rect_rectify3_zoom.png|Zoomed crop: nearest vs. bilinear"></div>
+    <p>All three come out front-on. In Rectification 1 the window mullions are straight, with vertical bars upright and horizontal bars level, so the grid of panes reads as a regular rectangle. The reflections in the glass are not on the window plane (they are the trees and buildings across the street), so they look compressed and smeared, and the bottom rows are softer because the warp stretched them the most. In Rectification 2 the sticker sheet is upright and rectangular, but the stickers have thickness and a glossy finish, so their edges and highlights don't straighten perfectly, and the ASUS logo appears sideways because of how the lid was oriented in the photo. In Rectification 3 the banner frame is square and the "VALORANT 26" lettering is level and readable, though the fine small text is soft because the original photo was taken at a steep angle and the warp had to enlarge it.</p>
+    <h3 class="sub">Nearest neighbor vs. bilinear</h3>
+    <div class="table-wrapper"><table>
+      <thead><tr><th>Image</th><th>Nearest (ms)</th><th>Bilinear (ms)</th><th>Ratio</th></tr></thead>
+      <tbody>
+        <tr><td>Rectification 1 (150×500)</td><td>14.0</td><td>40.8</td><td>2.9×</td></tr>
+        <tr><td>Rectification 2 (300×500)</td><td>25.8</td><td>83.2</td><td>3.2×</td></tr>
+        <tr><td>Rectification 3 (500×200)</td><td>19.6</td><td>48.7</td><td>2.5×</td></tr>
+        </tbody></table></div>
+    <div class="callout"><strong>Speed vs. quality</strong><p><b>Quality:</b> nearest neighbor copies the closest pixel, so edges and text look jagged and blocky, especially where the warp stretches the image. Bilinear averages the four surrounding pixels, so edges are smooth, at the cost of slight softness. <b>Speed:</b> nearest does one lookup per pixel, bilinear does four lookups and a weighted sum, so it is about 2.5–3.2× slower in my runs (timings above, from <code>results/log.txt</code>). Both finish quickly at this image size, so I use bilinear for the mosaics.</p></div>
+  </div>
+</div></section>
+
+<!-- ============ A4 ============ -->
+<section id="a4"><div class="container">
+  <div class="section-heading"><div class="section-number">A.4</div><div><p class="section-label">Part A · Blend into a Mosaic</p><h2>Mosaics</h2></div></div>
+  <div class="content">
+    <p class="lead">The centre photo stays unwarped, and the left and right photos are warped into its frame. For a chain, I multiply homographies (the left photo's H into the reference is the product of its pair homographies; the right photo uses the inverse). I compute one bounding box that covers all warped photos, warp each onto that shared canvas with bilinear interpolation, and blend.</p>
+    <p><b>Weights.</b> Each warped photo has a mask of valid pixels. Its weight is the distance transform of that mask, so the weight is 0 at the photo's border and grows toward its interior. <b>Feathering</b> averages the photos using these weights. <b>Two-band blending</b> splits each photo into a low-frequency part (Gaussian blur, σ = 8) and a high-frequency part (photo minus blur). The low frequencies are feathered for smooth colour transitions, and the high frequencies come from the photo with the largest weight at each pixel, which keeps detail sharp and avoids ghosting.</p>
+
+    <div class="code-wrapper"><span class="code-label">Blending</span>
+<pre>feather = Σ wᵢ·Iᵢ / Σ wᵢ
+two_band = Σ wᵢ·LP(Iᵢ) / Σ wᵢ  +  HP( I at argmaxᵢ wᵢ )     (HP = I − LP)</pre></div>
+
+    <h3 class="sub">Mosaic 1 — Chan Shun Auditorium</h3>
+    <div class="results-grid g1" data-imgs="results/A4_mosaics/mosaic1_sources.png|Source images;results/A4_mosaics/mosaic1_two_band.jpg|Final mosaic (two-band)"></div>
+    <div class="results-grid g3" data-imgs="results/A4_mosaics/mosaic1_warped_0.jpg|Left warped;results/A4_mosaics/mosaic1_warped_1.jpg|Centre (reference);results/A4_mosaics/mosaic1_warped_2.jpg|Right warped"></div>
+
+    <h3 class="sub">Mosaic 2 — My messy room</h3>
+    <div class="results-grid g1" data-imgs="results/A4_mosaics/mosaic2_sources.png|Source images;results/A4_mosaics/mosaic2_two_band.jpg|Final mosaic (two-band)"></div>
+    <div class="results-grid g3" data-imgs="results/A4_mosaics/mosaic2_warped_0.jpg|Left warped;results/A4_mosaics/mosaic2_warped_1.jpg|Centre (reference);results/A4_mosaics/mosaic2_warped_2.jpg|Right warped"></div>
+
+    <h3 class="sub">Mosaic 3 — Living Room</h3>
+    <div class="results-grid g1" data-imgs="results/A4_mosaics/mosaic3_sources.png|Source images;results/A4_mosaics/mosaic3_two_band.jpg|Final mosaic (two-band)"></div>
+    <div class="results-grid g3" data-imgs="results/A4_mosaics/mosaic3_warped_0.jpg|Left warped;results/A4_mosaics/mosaic3_warped_1.jpg|Centre (reference);results/A4_mosaics/mosaic3_warped_2.jpg|Right warped"></div>
+    <p>Distant, flat surfaces line up well in all three mosaics. In Mosaic 1 the building facade, columns and "Chan Shun Auditorium" lettering are continuous across the seams, and the two-band result shows no visible seam. The errors come from things that move or sit off a single plane. In Mosaic 1 a pedestrian who walked between shots leaves a faint ghost near the bottom right of the feathered result, and the people at the bottom left have shifted between photos. In Mosaic 2 the mirrored wardrobe doors show reflections that do not follow the homography, so the fridge appears twice (once for real and once in the mirror). The door frame also bends slightly at the top in the feathered result, which comes from nearby objects not lying on the wall plane. In Mosaic 3 the exposure differs between the three photos (the middle one is brighter than the right), and the glossy floor reflections, which change with viewpoint, blur a little in the overlap. All three canvases have large black corners and a bow-tie shape because the side photos are stretched most when warped into the centre frame.</p>
+    <h3 class="sub">Blending comparison</h3>
+    <p>The same warped photos combined three ways: overwrite, feathering, and two-band.</p>
+    <div class="results-grid g3" data-imgs="results/A4_mosaics/mosaic1_naive_overwrite.jpg|Mosaic 1: overwrite;results/A4_mosaics/mosaic1_feather.jpg|Mosaic 1: feather;results/A4_mosaics/mosaic1_two_band.jpg|Mosaic 1: two-band"></div>
+    <div class="results-grid g3" data-imgs="results/A4_mosaics/mosaic2_naive_overwrite.jpg|Mosaic 2: overwrite;results/A4_mosaics/mosaic2_feather.jpg|Mosaic 2: feather;results/A4_mosaics/mosaic2_two_band.jpg|Mosaic 2: two-band"></div>
+    <div class="results-grid g3" data-imgs="results/A4_mosaics/mosaic3_naive_overwrite.jpg|Mosaic 3: overwrite;results/A4_mosaics/mosaic3_feather.jpg|Mosaic 3: feather;results/A4_mosaics/mosaic3_two_band.jpg|Mosaic 3: two-band"></div>
+    <div class="callout"><strong>Takeaway</strong><p><b>Overwrite</b> leaves hard seams and visible exposure jumps. The tree in Mosaic 1 is cut off at a vertical edge, the door in Mosaic 2 is duplicated, and the sofa in Mosaic 3 changes brightness halfway across. <b>Feathering</b> removes the seams, but fine detail ghosts or blurs where the photos are slightly misaligned, such as the pedestrian in Mosaic 1 and the door frame in Mosaic 2. <b>Two-band</b> keeps colour transitions smooth and detail sharp, and gives the cleanest result in all three mosaics, so I use it for the finals.</p></div>  </div>
+</div></section>
+
+
+<footer><div class="container">CS 180 · Project 04A · Code: main.py</div></footer>
+</main>
+</div>
+
+<div class="lightbox" id="lightbox"><span class="lightbox-close">×</span><img alt=""></div>
+<script>
+document.querySelectorAll("[data-imgs]").forEach(g=>{g.innerHTML=g.dataset.imgs.split(";").map(s=>{const[p,l]=s.trim().split("|");
+return `<div class="result-card"><div class="result-image"><img class="zoomable" src="${p}" alt="${l}" loading="lazy"></div><div class="result-info"><p class="result-name">${l}</p></div></div>`}).join("")});
+const lb=document.getElementById("lightbox");
+document.addEventListener("click",e=>{if(e.target.classList.contains("zoomable")){lb.querySelector("img").src=e.target.src;lb.classList.add("active")}else if(lb.classList.contains("active"))lb.classList.remove("active")});
+</script>
+</body>
+</html>
