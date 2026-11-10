@@ -228,11 +228,6 @@ def find_image(stem):
         p = os.path.join(IMG_DIR, stem + ext)
         if os.path.isfile(p):
             return p
-def find_image(stem):
-    for ext in EXTS:
-        p = os.path.join(IMG_DIR, stem + ext)
-        if os.path.isfile(p):
-            return p
     raise FileNotFoundError(
         f"Couldn't find '{stem}' in {os.path.abspath(IMG_DIR)}\n"
         f"Folder contents: {os.listdir(IMG_DIR) if os.path.isdir(IMG_DIR) else 'FOLDER DOES NOT EXIST'}")

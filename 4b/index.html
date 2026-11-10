@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project 4B — Feature Matching &amp; Autostitching</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+<style>
+.results-grid.g1{grid-template-columns:minmax(0,1fr)}.results-grid.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.results-grid.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.results-grid{gap:18px}
+@media(max-width:800px){.results-grid.g3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.content h3.sub{margin:44px 0 10px;font-family:'Rajdhani',sans-serif;letter-spacing:.04em}
+.todo{background:#ffd54a;color:#111;padding:0 5px;border-radius:3px;font-weight:600}
+.hero::before{content:"04"}
+.content a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="page">
+<aside class="sidebar">
+  <a class="back" href="../index.html">← Back to Portfolio</a>
+  <div class="sidebar-label">Projects</div>
+  <nav>
+    <a href="../0/index.html">00 · Camera</a>
+    <a href="../1/index.html">01 · Prokudin-Gorskii</a>
+    <a href="../2/index.html">02 · Filters &amp; Frequencies</a>
+    <a href="../3/index.html">03 · Diffusion Models</a>
+    <a class="active" href="index.html">04 · (Auto)stitching &amp; Mosaics</a>
+    <span class="disabled">05 · Final Project</span>
+  </nav>
+</aside>
+
+<main>
+<header class="top-nav"><div class="nav-inner">
+  <a class="back" href="../4/index.html">← Part A</a>
+  <div class="nav-links"><a href="#b1">B.1 · Corners</a><a href="#b2">B.2 · Descriptors</a><a href="#b3">B.3 · Matching</a><a href="#b4">B.4 · RANSAC</a><a href="#b5">Learned</a></div>
+</div></header>
+
+<div class="hero" id="top"><div class="container hero-content">
+  <p class="eyebrow">CS 180 · Project 04 · Part B</p>
+  <h1>Feature Matching &amp; Autostitching</h1>
+  <p class="hero-subtitle">Harris corners, adaptive non-maximal suppression, MOPS-style descriptors, Lowe ratio matching and 4-point RANSAC, so the mosaics from Part A build themselves with no clicking. Based on Brown et al., "Multi-Image Matching using Multi-Scale Oriented Patches".</p>
+  <div class="hero-meta"><span class="meta active">Part B · Automatic Mosaics</span>
+  <span class="meta">Harris + ANMS</span><span class="meta">MOPS Descriptors</span><span class="meta">Ratio Test</span><span class="meta">RANSAC</span></div>
+</div></div>
+
+<!-- ============ B1 ============ -->
+<section id="b1"><div class="container">
+  <div class="section-heading"><div class="section-number">B.1</div><div><p class="section-label">Part B · Detect Features</p><h2>Harris Corners &amp; ANMS</h2></div></div>
+  <div class="content">
+    <p class="lead">I run the provided single-scale Harris detector on the grayscale image. It returns thousands of corners, clustered on high-contrast texture. Adaptive Non-Maximal Suppression (ANMS) picks 500 that are both strong and spread out over the image.</p>
+    <p>For each corner <code>xᵢ</code> with strength <code>f(xᵢ)</code>, ANMS finds its suppression radius: the distance to the nearest corner that is clearly stronger, <code>f(xᵢ) &lt; 0.9·f(xⱼ)</code>. I keep the 500 corners with the largest radii, so a corner survives either by being very strong or by being far from anything stronger.</p>
+    <div class="code-wrapper"><span class="code-label">ANMS</span>
+<pre>rᵢ = min over j of ‖xᵢ − xⱼ‖   such that   f(xᵢ) &lt; c_robust · f(xⱼ)    (c_robust = 0.9)
+keep the 500 points with the largest rᵢ    (the global maximum has rᵢ = ∞)</pre></div>
+    <p>Each row below shows all Harris corners, the 500 strongest corners with no ANMS, and the 500 ANMS corners, for the first photo of each set.</p>
+    <div class="results-grid g3" data-imgs="results/B_features/mosaic1_corners_all.png|Mosaic 1: all Harris corners (27,798);results/B_features/mosaic1_corners_strongest.png|Mosaic 1: top 500, no ANMS;results/B_features/mosaic1_corners_anms.png|Mosaic 1: ANMS, 500"></div>
+    <div class="results-grid g3" data-imgs="results/B_features/mosaic2_corners_all.png|Mosaic 2: all Harris corners;results/B_features/mosaic2_corners_strongest.png|Mosaic 2: top 500, no ANMS;results/B_features/mosaic2_corners_anms.png|Mosaic 2: ANMS, 500"></div>
+    <div class="results-grid g3" data-imgs="results/B_features/mosaic3_corners_all.png|Mosaic 3: all Harris corners;results/B_features/mosaic3_corners_strongest.png|Mosaic 3: top 500, no ANMS;results/B_features/mosaic3_corners_anms.png|Mosaic 3: ANMS, 500"></div>
+    <div class="callout"><strong>With vs. without ANMS</strong><p>Without ANMS, the 500 strongest corners pile up on the cedar tree, where the needles give the highest contrast, and the plain wall, columns and ground get almost none. With ANMS the points spread over the building and the ground as well as the tree, so there are features across the whole region that overlaps the next photo. That matters because the overlap is only about 35%.</p></div>
+  </div>
+</div></section>
+
+<!-- ============ B2 ============ -->
+<section id="b2"><div class="container">
+  <div class="section-heading"><div class="section-number">B.2</div><div><p class="section-label">Part B · Describe Features</p><h2>Feature Descriptors</h2></div></div>
+  <div class="content">
+    <p class="lead">Each corner gets an 8×8 descriptor sampled from a larger 40×40 window of the blurred image. Sampling from a big blurred window makes the descriptor tolerant of small misalignment and noise.</p>
+    <div class="code-wrapper"><span class="code-label">Descriptor extraction</span>
+<pre>blurred = gaussian_filter(gray, sigma=2)
+patch   = blurred[y-20:y+20:5, x-20:x+20:5]     # 40x40 window, every 5th pixel -> 8x8
+d       = (patch - patch.mean()) / patch.std()   # bias/gain normalization</pre></div>
+    <p>Subtracting the mean removes brightness offsets and dividing by the standard deviation removes contrast changes, so the same corner matches under different exposure. Corners within 20 px of the border are dropped. There is no rotation invariance and no wavelet step, per the assignment. The figures show the 40×40 window and the resulting 8×8 descriptor for 8 random corners.</p>
+    <div class="results-grid g1" data-imgs="results/B_features/mosaic1_descriptors.png|Mosaic 1: 40x40 windows and normalized 8x8 descriptors"></div>
+    <div class="results-grid g2" data-imgs="results/B_features/mosaic2_descriptors.png|Mosaic 2: descriptors;results/B_features/mosaic3_descriptors.png|Mosaic 3: descriptors"></div>
+  </div>
+</div></section>
+
+<!-- ============ B3 ============ -->
+<section id="b3"><div class="container">
+  <div class="section-heading"><div class="section-number">B.3</div><div><p class="section-label">Part B · Match Features</p><h2>Feature Matching</h2></div></div>
+  <div class="content">
+    <p class="lead">For every descriptor in image 1, I find its two nearest neighbours in image 2 by Euclidean distance and accept the match only if <code>e₁ / e₂ &lt; 0.8</code> (Lowe's ratio test).</p>
+    <p>A correct match has one neighbour much closer than all others, so the ratio is small. A wrong match on repeated texture has two similarly bad neighbours, so the ratio is near 1. I also keep only the best-ratio match when several features claim the same target. I used 0.8 as the threshold (Figure 6b of the paper plots how the ratio separates correct from incorrect matches, and I used it to choose the threshold), because RANSAC removes the wrong matches that remain. Lines below are a random subset of at most 80 matches. With 500 corners per image and ratio &lt; 0.8, the six pairs give 107, 35, 44, 42, 31 and 38 matches (Mosaic 1 to 3, left → centre then centre → right). B.4 uses 2000 corners, so it finds more.</p>
+    <div class="results-grid g2" data-imgs="results/B_features/mosaic1_0to1_matches.png|Mosaic 1: left → centre;results/B_features/mosaic1_1to2_matches.png|Mosaic 1: centre → right"></div>
+    <div class="results-grid g2" data-imgs="results/B_features/mosaic2_0to1_matches.png|Mosaic 2: left → centre;results/B_features/mosaic2_1to2_matches.png|Mosaic 2: centre → right"></div>
+    <div class="results-grid g2" data-imgs="results/B_features/mosaic3_0to1_matches.png|Mosaic 3: left → centre;results/B_features/mosaic3_1to2_matches.png|Mosaic 3: centre → right"></div>
+    <div class="callout"><strong>What the matches show</strong><p>In the left → centre pairs, most lines run in the same direction with similar slope, which is what a correct homography looks like, and only a few lines cut across as outliers (for example a long line across the tree in Mosaic 1). The centre → right pairs, and Mosaics 2 and 3 generally, have fewer matches and many crossing lines. The overlap is small, the white door and wall have little texture, the mirrored wardrobe shows reflections that do not follow a homography, and the glossy floor and bright windows in Mosaic 3 change with viewpoint. RANSAC is there to throw these away.</p></div>
+  </div>
+</div></section>
+
+<!-- ============ B4 ============ -->
+<section id="b4"><div class="container">
+  <div class="section-heading"><div class="section-number">B.4</div><div><p class="section-label">Part B · Robust Homography</p><h2>RANSAC &amp; Automatic Mosaics</h2></div></div>
+  <div class="content">
+    <p class="lead">Some ratio-test matches are still wrong, and least squares is badly thrown by even one of them. 4-point RANSAC fits H to random minimal samples and keeps the H that the most matches agree with.</p>
+    <div class="code-wrapper"><span class="code-label">4-point RANSAC (written from scratch)</span>
+<pre>repeat 5000 times:
+    pick 4 random matches; skip if nearly collinear
+    H = computeH(4 pairs)                        # exact fit, my Part A function
+    inliers = { i : ‖H·p1ᵢ − p2ᵢ‖ &lt; 4 px }
+    keep the largest inlier set
+refit H by least squares on all inliers (twice, re-selecting inliers)</pre></div>
+    <p>I use 2000 ANMS corners per image here (more candidates give more matches), the 0.8 ratio, and a 4 px inlier threshold. A pair counts as failed if it has under 15 inliers or an unreasonable H (the script then skips that mosaic). Green lines are inliers and red lines are outliers rejected by RANSAC.</p>
+    <div class="results-grid g2" data-imgs="results/B4_mosaics/mosaic1_ransac_0to1.png|Mosaic 1: left → centre;results/B4_mosaics/mosaic1_ransac_1to2.png|Mosaic 1: centre → right"></div>
+    <div class="results-grid g2" data-imgs="results/B4_mosaics/mosaic2_ransac_0to1.png|Mosaic 2: left → centre;results/B4_mosaics/mosaic2_ransac_1to2.png|Mosaic 2: centre → right"></div>
+    <div class="results-grid g2" data-imgs="results/B4_mosaics/mosaic3_ransac_0to1.png|Mosaic 3: left → centre;results/B4_mosaics/mosaic3_ransac_1to2.png|Mosaic 3: centre → right"></div>
+
+    <div class="table-wrapper"><table>
+      <thead><tr><th>Pair</th><th>Matches</th><th>Inliers</th><th>Auto vs. manual H at corners (px)</th></tr></thead>
+      <tbody>
+        <tr><td>Mosaic 1: left → centre</td><td>403</td><td>359</td><td>17.2</td></tr>
+        <tr><td>Mosaic 1: centre → right</td><td>123</td><td>64</td><td>231.8</td></tr>
+        <tr><td>Mosaic 2: left → centre</td><td>132</td><td>38</td><td>98.1</td></tr>
+        <tr><td>Mosaic 2: centre → right</td><td>90</td><td>29</td><td>284.9</td></tr>
+        <tr><td>Mosaic 3: left → centre</td><td>91</td><td>29</td><td>236.8</td></tr>
+        <tr><td>Mosaic 3: centre → right</td><td>108</td><td>15</td><td>677.7</td></tr>
+      </tbody></table></div>
+    <p>Numbers come from <code>results/log.txt</code>. The last column is the mean distance between where the automatic and the manual homography send the image corners.</p>
+
+    <h3 class="sub">Manual (Part A) vs. automatic</h3>
+    <p>Both mosaics use the same reference image, the same warping and the same two-band blending. Only the homographies differ.</p>
+    <div class="results-grid g1" data-imgs="results/B4_mosaics/mosaic1_manual_vs_automatic.png|Mosaic 1: manual (top) vs. automatic (bottom)"></div>
+    <div class="results-grid g1" data-imgs="results/B4_mosaics/mosaic2_manual_vs_automatic.png|Mosaic 2: manual (top) vs. automatic (bottom)"></div>
+    <div class="results-grid g1" data-imgs="results/B4_mosaics/mosaic3_manual_vs_automatic.png|Mosaic 3: manual (top) vs. automatic (bottom)"></div>
+    <div class="callout"><strong>Comparison</strong><p>Mosaic 1 is the clearest win for the automatic method. The left → centre pair has 359 inliers (89%) and the centre → right pair has 64, while my manual centre → right pair had a 28 px maximum error in Part A. Mosaic 2 rests on only 38 and 29 inliers (about 30%), because the mirrored wardrobe doors and the blank white door give few reliable matches. Mosaic 3 is the weakest automatic result: 29 and 15 inliers, with the second pair only 14% of its matches, and its homographies differ most from my manual ones (237 and 678 px), so I trust it least. The gap column overstates visible error, because small differences in H are amplified at the far corners of the image, but it does show how much the two methods disagree. Visually, Mosaic 1 is where the two methods agree best: the portico, columns and lettering line up, and the right wing continues the cornice and window rhythm without a visible seam. Mosaic 2 has no visible seams or ghosting in the overlap, since the door frame, fridge and wardrobe edges all line up. But the automatic version stretches the right third, so the wardrobe panel and the ceiling line lean outward more than they do in the manual version, which looks more natural. Mosaic 3 is the worst case: the photos line up, but the automatic homographies enlarge the right photo so much that the box and chair look huge next to the sofa, and the curtain decals are blurry where the photos overlap. This matches the weak 15-inlier pair. In Mosaics 2 and 3 the manual mosaic is the better result, because a few dozen inliers, many of them on reflections or off the dominant plane, let the fit drift, while my 12 hand-picked points sat on real structure.</p></div>
+  </div>
+</div></section>
+
+<!-- ============ B5 ============ -->
+<section id="b5"><div class="container">
+  <div class="section-heading"><div class="section-number">★</div><div><p class="section-label">Part B · Reflection</p><h2>What I Learned</h2></div></div>
+  <div class="content">
+    <p>Each step removes a different failure. ANMS makes sure features exist across the whole overlap, the ratio test removes ambiguous matches, and RANSAC removes matches that are confident but wrong. RANSAC mattered most: in Mosaic 2 only about 30% of matches were inliers, and a least-squares fit on all of them would have been ruined. Scenes with reflections, blank walls and little overlap were hardest. Using 2000 corners per image instead of 500 gave many more matches, which made the weak pairs workable.</p>
+  </div>
+</div></section>
+
+<footer><div class="container">CS 180 · Project 04B · Code: main4b.py, features.py</div></footer>
+</main>
+</div>
+
+<div class="lightbox" id="lightbox"><span class="lightbox-close">×</span><img alt=""></div>
+<script>
+document.querySelectorAll("[data-imgs]").forEach(g=>{g.innerHTML=g.dataset.imgs.split(";").map(s=>{const[p,l]=s.trim().split("|");
+return `<div class="result-card"><div class="result-image"><img class="zoomable" src="${p}" alt="${l}" loading="lazy"></div><div class="result-info"><p class="result-name">${l}</p></div></div>`}).join("")});
+const lb=document.getElementById("lightbox");
+document.addEventListener("click",e=>{if(e.target.classList.contains("zoomable")){lb.querySelector("img").src=e.target.src;lb.classList.add("active")}else if(lb.classList.contains("active"))lb.classList.remove("active")});
+</script>
+</body>
+</html>
